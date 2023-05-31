@@ -11,8 +11,16 @@ const boughtSchema = new mongoose.Schema({
         ref: "Picture",
         required: true
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 })
 
-const Bought = mongoose.model("Bought", boughtSchema)
+boughtSchema.virtual('picture', {
+    ref: 'Picture',
+    localField: 'picture_id',
+    foreignField: '_id',
+    justOne: true
+})
 
-module.exports = Bought
+module.exports = mongoose.model("Bought", boughtSchema)

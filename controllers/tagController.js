@@ -1,76 +1,74 @@
-const Tag = require('../models/tag');
+const Tag = require('./../models/tag');
+const catchAsync = require('./../utils/catchAsync');
 
-// needs a check if tag in use
-exports.addTag = async (req, res) => {
-    try {
-        const tag = new Tag({
-            ...req.body
-        })
-        await tag.save();
-        res.json(tag)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.addTag = catchAsync(async (req, res, next) => {
+    const item = await Tag.create(req.body)
 
-// needs a check if tag in use
-exports.getAllTags = async (req, res) => {
-    try {
-        const tags = await Tag.find();
-        res.json(tags);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
+        }
+    })
+})
 
-exports.getTag = async (req, res) => {
-    try {
-        const tag = await Tag.findOne({ _id: req.params.id });
-        if (!tag)
-            res.status(404).json(tag)
-        res.status(200).send(tag)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getAllTags = catchAsync(async (req, res, next) => {
+    const items = await Tag.find();
 
-exports.editTag = async (req, res) => {
-    try {
-        const tag = await Tag.findOneAndUpdate({ _id: req.params.id },
-            req.body, {
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
+        }
+    });
+})
+
+exports.getTag = catchAsync(async (req, res, next) => {
+    const item = await Tag.findById(req.params.id);
+
+    if (!item)
+        next(new AppError('Tag not found', 404))
+    else
+        res.status(200).json({
+            status: "success",
+            data: {
+                item
+            }
+        });
+})
+
+exports.editTag = catchAsync(async (req, res, next) => {
+    const item = await Tag.findOneAndUpdate({ _id: req.params.id },
+        req.body,
+        {
             new: true,
             runValidators: true
         })
-        if (!tag)
-            res.status(404).json()
-        res.json(tag);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
 
-exports.deleteTag = async (req, res) => {
-    try {
-        const tag = await Tag.findOneAndDelete({ _id: req.params.id });
-        if (!tag) {
-            res.status(404)
-            throw new Error('Tag not found')
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    });
+})
 
-exports.deleteAllTags = async (req, res) => {
-    try {
-        const tags = await Tag.deleteMany()
-        if (!tags) {
-            res.status(404)
-            throw new Error('Tags not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.deleteTag = catchAsync(async (req, res, next) => {
+    const item = await Tag.findOneAndDelete({ _id: req.params.id });
+
+    if (!item)
+        next(new AppError('Tag not found', 404))
+    else
+        res.status(204).json({
+            status: "success"
+        });
+})
+
+exports.deleteAllTags = catchAsync(async (req, res, next) => {
+    await Tag.deleteMany()
+
+    res.status(204).json({
+        status: "success"
+    });
+})

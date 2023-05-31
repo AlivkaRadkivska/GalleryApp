@@ -1,76 +1,74 @@
-const Category = require('../models/category');
+const Category = require('./../models/category');
+const catchAsync = require('./../utils/catchAsync');
 
-// needs a check if category in use
-exports.addCategory = async (req, res) => {
-    try {
-        const category = new Category({
-            ...req.body
-        })
-        await category.save();
-        res.json(category)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.addCategory = catchAsync(async (req, res, next) => {
+    const item = await Category.create(req.body)
 
-// needs a check if category in use
-exports.getAllCategories = async (req, res) => {
-    try {
-        const categories = await Category.find();
-        res.json(categories);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
+        }
+    })
+})
 
-exports.getCategory = async (req, res) => {
-    try {
-        const category = await Category.findOne({ _id: req.params.id });
-        if (!category)
-            res.status(404).json(category)
-        res.send(category)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getAllCategories = catchAsync(async (req, res, next) => {
+    const items = await Category.find().populate('pictures');
 
-exports.editCategory = async (req, res) => {
-    try {
-        const category = await Category.findOneAndUpdate({ _id: req.params.id },
-            req.body, {
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
+        }
+    });
+})
+
+exports.getCategory = catchAsync(async (req, res, next) => {
+    const item = await Category.findById(req.params.id).populate('pictures');
+
+    if (!item)
+        next(new AppError('Category not found', 404))
+    else
+        res.status(200).json({
+            status: "success",
+            data: {
+                item
+            }
+        });
+})
+
+exports.editCategory = catchAsync(async (req, res, next) => {
+    const item = await Category.findOneAndUpdate({ _id: req.params.id },
+        req.body,
+        {
             new: true,
             runValidators: true
         })
-        if (!category)
-            res.status(404).json()
-        res.json(category);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
 
-exports.deleteCategory = async (req, res) => {
-    try {
-        const category = await Category.findOneAndDelete({ _id: req.params.id });
-        if (!category) {
-            res.status(404)
-            throw new Error('Category not found')
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    });
+})
 
-exports.deleteAllCategories = async (req, res) => {
-    try {
-        const categories = await Category.deleteMany()
-        if (!categories) {
-            res.status(404)
-            throw new Error('categories not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.deleteCategory = catchAsync(async (req, res, next) => {
+    const item = await Category.findOneAndDelete({ _id: req.params.id }).populate('pictures');
+
+    if (!item)
+        next(new AppError('Category not found', 404))
+    else
+        res.status(204).json({
+            status: "success"
+        });
+})
+
+exports.deleteAllCategories = catchAsync(async (req, res, next) => {
+    await Category.deleteMany().populate('pictures')
+
+    res.status(204).json({
+        status: "success"
+    });
+})

@@ -11,8 +11,16 @@ const likedSchema = new mongoose.Schema({
         ref: "Picture",
         required: true
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 })
 
-const Liked = mongoose.model("Liked", likedSchema)
+likedSchema.virtual('picture', {
+    ref: 'Picture',
+    localField: 'picture_id',
+    foreignField: '_id',
+    justOne: true
+})
 
-module.exports = Liked
+module.exports = mongoose.model("Liked", likedSchema)

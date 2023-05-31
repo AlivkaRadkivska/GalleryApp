@@ -15,5 +15,4 @@ router.route('/:id')
     .patch(tagController.editTag)
     .delete(tagController.deleteTag)
 
-
 module.exports = router

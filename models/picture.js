@@ -1,57 +1,63 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const pictureSchema = new mongoose.Schema({
     name: {
         type: String,
+        required: true,
         trim: true,
-        required: true
+        maxLength: 40,
+        minLength: 5,
     },
-    description: {
+    format: {
         type: String,
+        required: true,
         trim: true,
-        required: true
-    },
-    format: { // [squad, horizontal, vertical]
-        // type: Enumerate,
-        type: String,
-        trim: true,
-        required: true
+        enum: {
+            values: ['square', 'horizontal', 'vertical'],
+            message: 'Format has to be either: square, horizontal, vertical'
+        }
     },
     demo_img: {
         type: String,
-        trim: true,
-        required: true
+        required: true,
+        trim: true
     },
     full_img: {
         type: String,
-        trim: true,
-        required: true
+        required: true,
+        trim: true
     },
     price: {
         type: Number,
         required: true,
-        validate(value) {
-            if (value < 1) {
-                throw new Error("price cannot be below 1");
-            }
-        },
+        validate: {
+            validator: function (val) {
+                return val > 0;
+            },
+            message: 'Price cannot be below 1'
+        }
     },
-    status: { //enumeration [checking, active, hidden]
-        // type: Enumerate,
+    status: {
         type: String,
-        default: 'checking'
+        default: 'checking',
+        enum: {
+            values: ['checking', 'active', 'hidden', 'rejected'],
+            message: 'Status has to be either: checking, active, hidden, rejected'
+        }
     },
-    artist: {
+    artist_id: {
         type: mongoose.Schema.Types.ObjectId,
-        // type: Number,
         ref: "User",
         required: true
     },
-    category: {
+    category_id: {
         type: mongoose.Schema.Types.ObjectId,
-        // type: Number,
         ref: "Category",
         required: true
+    },
+    adding_date: {
+        type: Date,
+        default: Date.now()
     },
     tags: [
         {
@@ -61,9 +67,29 @@ const pictureSchema = new mongoose.Schema({
             },
         },
     ],
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+pictureSchema.virtual('category', {
+    ref: 'Category',
+    localField: 'category_id',
+    foreignField: '_id',
+    justOne: true
+});
+
+pictureSchema.virtual('artist', {
+    ref: 'User',
+    localField: 'artist_id',
+    foreignField: '_id',
+    justOne: true
 })
 
+pictureSchema.pre(/^find/, function (next) {
+    this.find({ status: 'active' })
 
-const Picture = mongoose.model("Picture", pictureSchema)
+    next();
+})
 
-module.exports = Picture
+module.exports = mongoose.model("Picture", pictureSchema)

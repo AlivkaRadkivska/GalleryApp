@@ -1,99 +1,89 @@
 const User = require('./../models/user');
+const catchAsync = require('./../utils/catchAsync')
 
-// to populate: bought, liked
+//CHANGE
+exports.loginUser = catchAsync(async (req, res, next) => {
+    const user = await User.findOneByCredentials(
+        req.body.email,
+        req.body.password
+    );
+    const token = await user.generateAuthToken();
+    res.status(200).send({ user, token });
+})
+//
 
-exports.loginUser = async (req, res) => {
-    try {
-        const user = await User.findOneByCredentials(
-            req.body.email,
-            req.body.password
-        );
-        const token = await user.generateAuthToken();
-        res.send({ user, token });
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+//CHANGE
+exports.logoutUser = catchAsync(async (req, res, next) => {
+    req.user.tokens = req.user.tokens.filter((token) => {
+        return token.token != req.token;
+    });
+    await req.user.save();
+    res.status(200).send();
+})
+//
 
-exports.logoutUser = async (req, res) => {
-    try {
-        req.user.tokens = req.user.tokens.filter((token) => {
-            return token.token != req.token;
-        });
-        await req.user.save();
-        res.send();
-    } catch (error) {
-        res.status(500).send();
-    }
-}
+exports.addUser = catchAsync(async (req, res, next) => {
+    const item = await User.create(req.body);
 
-// exports.getCurrUser = async (req, res) => {
-//     const user = await User.findById(req.user.id);
-//     // await user.populate('tasks');
-//     res.send(user);
-// }
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
+        }
+    })
+})
 
-exports.addUser = async (req, res) => {
-    try {
-        const user = await User.create(req.body);
-        res.json(user);
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+    const items = await User.find().populate('bought').populate('liked').populate('pictures');
 
-exports.getAllUsers = async (req, res) => {
-    try {
-        // const users = await User.find().populate('tasks');
-        const users = await User.find();
-        res.json(users);
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
+        }
+    });
+})
 
-exports.getUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        // await user.populate('tasks');
-        res.json(user);
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+exports.getUser = catchAsync(async (req, res, next) => {
+    const item = await User.findById(req.params.id).populate('bought').populate('liked').populate('pictures');
 
-exports.editUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        const fields = ['firstName', 'lastName', 'password', 'age', 'email'];
-        fields.forEach((field) => {
-            if (req.body[field]) {
-                user[field] = req.body[field];
-            }
-        });
-        await user.save();
-        res.status(200).json(user);
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
+        }
+    });
+})
 
-exports.deleteUser = async (req, res) => {
-    try {
-        const user = await User.findByIdAndDelete(req.params.id);
-        if (!user) res.status(404).json(user);
-        res.status(204).json(user);
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+exports.editUser = catchAsync(async (req, res, next) => {
+    const item = await User.findOneAndUpdate({ _id: req.params.id },
+        req.body,
+        {
+            new: true,
+            runValidators: true
+        })
 
-exports.deleteAllUsers = async (req, res) => {
-    try {
-        const users = await User.deleteMany({});
-        if (!users) res.status(404).json();
-        res.status(204).json();
-    } catch (error) {
-        res.send(error.message);
-    }
-}
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
+        }
+    });
+})
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+    await User.findOneAndDelete({ _id: req.params.id });
+
+    res.status(204).json({
+        status: "success"
+    });
+})
+
+exports.deleteAllUsers = catchAsync(async (req, res, next) => {
+    await User.deleteMany()
+
+    res.status(204).json({
+        status: "success"
+    });
+})

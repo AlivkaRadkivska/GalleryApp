@@ -1,100 +1,58 @@
-const Liked = require('../models/liked');
+const Liked = require('./../models/liked');
+const catchAsync = require('./../utils/catchAsync');
 
-exports.addLiked = async (req, res) => {
-    try {
-        const liked = new Liked({
-            ...req.body
-        })
-        await liked.save();
-        res.json(liked)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.addLiked = catchAsync(async (req, res, next) => {
+    const item = await Liked.create(req.body)
 
-exports.getAllLiked = async (req, res) => {
-    try {
-        const likeds = await Liked.find();
-        res.json(likeds);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.getLiked = async (req, res) => {
-    try {
-        const liked = await Liked.findOne({ _id: req.params.id });
-        if (!liked)
-            res.status(404).json(liked)
-        res.status(200).send(liked)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.editLiked = async (req, res) => {
-    try {
-        const liked = await Liked.findOneAndUpdate({ _id: req.params.id },
-            req.body, {
-            new: true,
-            runValidators: true
-        })
-        if (!liked)
-            res.status(404).json()
-        res.json(liked);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.deleteLiked = async (req, res) => {
-    try {
-        const liked = await Liked.findOneAndDelete({ _id: req.params.id });
-        if (!liked) {
-            res.status(404)
-            throw new Error('Liked picture not found')
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    })
+})
 
-exports.deleteAllLikedByUser = async (req, res) => {
-    try {
-        const likeds = await Liked.deleteMany({ user_id: req.params.user.id })
-        if (!likeds) {
-            res.status(404)
-            throw new Error('Liked pictures not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getAllLiked = catchAsync(async (req, res, next) => {
+    const items = await Liked.find().populate('picture');
 
-exports.deleteAllLikedByPicture = async (req, res) => {
-    try {
-        const likeds = await Liked.deleteMany({ user_id: req.params.picture.id })
-        if (!likeds) {
-            res.status(404)
-            throw new Error('Liked pictures not found')
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    });
+})
 
-exports.deleteAllLiked = async (req, res) => {
-    try {
-        const likeds = await Liked.deleteMany()
-        if (!likeds) {
-            res.status(404)
-            throw new Error('Liked pictures not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getLiked = catchAsync(async (req, res, next) => {
+    const item = await Liked.findById(req.params.id).populate('picture');
+
+    if (!item)
+        next(new AppError('Liked not found', 404))
+    else
+        res.status(200).json({
+            status: "success",
+            data: {
+                item
+            }
+        });
+})
+
+exports.deleteLiked = catchAsync(async (req, res, next) => {
+    const item = await Liked.findOneAndDelete({ _id: req.params.id });
+
+    if (!item)
+        next(new AppError('Liked not found', 404))
+    else
+        res.status(204).json({
+            status: "success"
+        });
+})
+
+exports.deleteAllLiked = catchAsync(async (req, res, next) => {
+    await Liked.deleteMany()
+
+    res.status(204).json({
+        status: "success"
+    });
+})

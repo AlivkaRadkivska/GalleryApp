@@ -8,6 +8,15 @@ const tagSchema = new mongoose.Schema({
     }
 })
 
-const Tag = mongoose.model("Tag", tagSchema)
+//CHANGE
+// categorySchema.virtual('in_use').get(function () {
+//     let pictureCount = 0;
 
-module.exports = Tag
+//     if (this.pictures)
+//         pictureCount = this.pictures.length;
+
+//     return pictureCount > 0;
+// })
+//
+
+module.exports = mongoose.model("Tag", tagSchema)

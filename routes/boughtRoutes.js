@@ -12,14 +12,6 @@ router.route('/')
 
 router.route('/:id')
     .get(boughtController.getBought)
-    .patch(boughtController.editBought)
     .delete(boughtController.deleteBought)
-
-router.route('user/:id')
-    .delete(boughtController.deleteAllBoughtByUser)
-
-router.route('picture/:id')
-    .delete(boughtController.deleteAllBoughtByPicture)
-
 
 module.exports = router

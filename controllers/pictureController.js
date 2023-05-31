@@ -1,112 +1,107 @@
 const Picture = require('./../models/picture');
+const APIFeatures = require('./../utils/apiFeatures');
+const catchAsync = require('./../utils/catchAsync')
+const AppError = require('./../utils/appError')
 
-exports.addPicture = async (req, res) => {
-    try {
-        const picture = new Picture({
-            ...req.body
-        })
-        await picture.save();
-        res.json(picture)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.addPicture = catchAsync(async (req, res, next) => {
+    const item = await Picture.create(req.body);
 
-// needs tags extension
-exports.getAllPictures = async (req, res) => {
-    try {
-        const pictures = await Picture.find();
-        res.json(pictures);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
+        }
+    })
+})
 
-exports.getPicture = async (req, res) => {
-    try {
-        const picture = await Picture.findOne({ _id: req.params.id });
-        if (!picture)
-            res.status(404).json(picture)
-        res.send(picture)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getAllPictures = catchAsync(async (req, res, next) => {
+    const features = new APIFeatures(Picture.find(), req.query)
+        .filter()
+        .sort()
+        .paginate();
 
-exports.editPicture = async (req, res) => {
-    try {
-        const picture = await Picture.findOneAndUpdate({ _id: req.params.id, artist: req.user._id },
-            req.body, {
+    const items = await features.query.populate('category').populate('artist');
+
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
+        }
+    });
+
+})
+
+exports.getPicturesStats = catchAsync(async (req, res, next) => {
+    const stats = await Picture.aggregate([
+        // { $match: { status: 'active' } },
+        {
+            $group: {
+                // _id: { $toUpper: '$category' },
+                _id: null,
+                numberOfPictures: { $sum: 1 },
+                avgPrice: { $avg: '$price' },
+                minPrice: { $min: '$price' },
+                maxPrice: { $max: '$price' },
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            stats
+        }
+    });
+})
+
+exports.getPicture = catchAsync(async (req, res, next) => {
+    const item = await Picture.findById(req.params.id);
+
+    if (!item)
+        next(new AppError('Picture not found', 404))
+    else
+        res.status(200).json({
+            status: "success",
+            data: {
+                item
+            }
+        });
+})
+
+exports.editPicture = catchAsync(async (req, res, next) => {
+    // const item = await Picture.findOneAndUpdate({ _id: req.params.id, artist: req.user._id },
+    const item = await Picture.findOneAndUpdate({ _id: req.params.id },
+        req.body,
+        {
             new: true,
             runValidators: true
         })
-        if (!picture)
-            res.status(404).json()
-        res.json(picture);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
 
-exports.deletePicture = async (req, res) => {
-    try {
-        const picture = await Picture.findOneAndDelete({ _id: req.params.id, artist: req.user._id });
-        if (!picture) {
-            res.status(404)
-            throw new Error('picture not found')
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    });
+})
 
-exports.deleteAllPictures = async (req, res) => {
-    try {
-        const pictures = await Picture.deleteMany()
-        if (!pictures) {
-            res.status(404)
-            throw new Error('pictures not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.deletePicture = catchAsync(async (req, res, next) => {
+    //const item = await Picture.findOneAndDelete({ _id: req.params.id, artist: req.user._id });
+    const item = await Picture.findOneAndDelete({ _id: req.params.id });
 
-exports.getPicturesByArtist = async (req, res) => {
-    try {
-        const picture = await Picture.findOne({ artist: req.params.id });
-        if (!picture)
-            res.status(404).json(picture)
-        res.send(picture)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    if (!item)
+        next(new AppError('Picture not found', 404))
+    else
+        res.status(204).json({
+            status: "success"
+        });
+})
 
-exports.deleteAllPicturesByArtist = async (req, res) => {
-    try {
-        const pictures = await Picture.find({ artist: req.params.id });
-        if (!pictures) {
-            res.status(404)
-            throw new Error('Pictures not found')
-        }
-        res.status(204).json()
-        res.send(pictures)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.deleteAllPictures = catchAsync(async (req, res, next) => {
+    await Picture.deleteMany()
 
-// needs tags extension
-exports.getPicturesByCategory = async (req, res) => {
-    try {
-        const picture = await Picture.findOne({ category: req.params.id });
-        if (!picture)
-            res.status(404).json(picture)
-        res.send(picture)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    res.status(204).json({
+        status: "success"
+    });
+})

@@ -12,14 +12,6 @@ router.route('/')
 
 router.route('/:id')
     .get(likedController.getLiked)
-    .patch(likedController.editLiked)
     .delete(likedController.deleteLiked)
-
-router.route('user/:id')
-    .delete(likedController.deleteAllLikedByUser)
-
-router.route('picture/:id')
-    .delete(likedController.deleteAllLikedByPicture)
-
 
 module.exports = router

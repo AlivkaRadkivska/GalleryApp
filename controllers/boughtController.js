@@ -1,100 +1,58 @@
-const Bought = require('../models/bought');
+const Bought = require('./../models/bought');
+const catchAsync = require('./../utils/catchAsync');
 
-exports.addBought = async (req, res) => {
-    try {
-        const bought = new Bought({
-            ...req.body
-        })
-        await bought.save();
-        res.json(bought)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.addBought = catchAsync(async (req, res, next) => {
+    const item = await Bought.create(req.body)
 
-exports.getAllBought = async (req, res) => {
-    try {
-        const boughts = await Bought.find();
-        res.json(boughts);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.getBought = async (req, res) => {
-    try {
-        const bought = await Bought.findOne({ _id: req.params.id });
-        if (!bought)
-            res.status(404).json(bought)
-        res.status(200).send(bought)
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.editBought = async (req, res) => {
-    try {
-        const bought = await Bought.findOneAndUpdate({ _id: req.params.id },
-            req.body, {
-            new: true,
-            runValidators: true
-        })
-        if (!bought)
-            res.status(404).json()
-        res.json(bought);
-    } catch (error) {
-        res.send(error.message)
-    }
-}
-
-exports.deleteBought = async (req, res) => {
-    try {
-        const bought = await Bought.findOneAndDelete({ _id: req.params.id });
-        if (!bought) {
-            res.status(404)
-            throw new Error('Bought picture not found')
+    res.status(201).json({
+        status: "success",
+        data: {
+            item
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    })
+})
 
-exports.deleteAllBoughtByUser = async (req, res) => {
-    try {
-        const boughts = await Bought.deleteMany({ user_id: req.params.user.id })
-        if (!boughts) {
-            res.status(404)
-            throw new Error('Bought pictures not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getAllBought = catchAsync(async (req, res, next) => {
+    const items = await Bought.find().populate('picture');
 
-exports.deleteAllBoughtByPicture = async (req, res) => {
-    try {
-        const boughts = await Bought.deleteMany({ user_id: req.params.picture.id })
-        if (!boughts) {
-            res.status(404)
-            throw new Error('Bought pictures not found')
+    res.status(200).json({
+        status: "success",
+        number: items.length,
+        data: {
+            items
         }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+    });
+})
 
-exports.deleteAllBought = async (req, res) => {
-    try {
-        const boughts = await Bought.deleteMany()
-        if (!boughts) {
-            res.status(404)
-            throw new Error('Bought pictures not found')
-        }
-        res.status(204).json()
-    } catch (error) {
-        res.send(error.message)
-    }
-}
+exports.getBought = catchAsync(async (req, res, next) => {
+    const item = await Bought.findById(req.params.id).populate('picture');
+
+    if (!item)
+        next(new AppError('Bought not found', 404))
+    else
+        res.status(200).json({
+            status: "success",
+            data: {
+                item
+            }
+        });
+})
+
+exports.deleteBought = catchAsync(async (req, res, next) => {
+    const item = await Bought.findOneAndDelete({ _id: req.params.id });
+
+    if (!item)
+        next(new AppError('Bought not found', 404))
+    else
+        res.status(204).json({
+            status: "success"
+        });
+})
+
+exports.deleteAllBought = catchAsync(async (req, res, next) => {
+    await Bought.deleteMany()
+
+    res.status(204).json({
+        status: "success"
+    });
+})

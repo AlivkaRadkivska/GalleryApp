@@ -21,5 +21,4 @@ router.route('/:id')
   .patch(userController.editUser)
   .delete(userController.deleteUser)
 
-
 module.exports = router
