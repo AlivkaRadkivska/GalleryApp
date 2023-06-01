@@ -2,7 +2,7 @@ const Liked = require('./../models/liked');
 const catchAsync = require('./../utils/catchAsync');
 
 exports.addLiked = catchAsync(async (req, res, next) => {
-    const item = await Liked.create(req.body)
+    const item = await Liked.create({ ...req.body, user_id: req.user.id })
 
     res.status(201).json({
         status: "success",

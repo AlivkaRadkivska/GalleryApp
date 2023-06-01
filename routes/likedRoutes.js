@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const likedController = require('../controllers/likedController');
-// const auth = require('.././middleware/auth');
-// router.use(auth)
+const authController = require('./../controllers/authController');
 
 
 router.route('/')
-    .post(likedController.addLiked)
+    .post(authController.protect, likedController.addLiked)
     .get(likedController.getAllLiked)
     .delete(likedController.deleteAllLiked)
 

@@ -1,37 +1,16 @@
 const User = require('./../models/user');
 const catchAsync = require('./../utils/catchAsync')
+const AppError = require('./../utils/appError')
 
-//CHANGE
-exports.loginUser = catchAsync(async (req, res, next) => {
-    const user = await User.findOneByCredentials(
-        req.body.email,
-        req.body.password
-    );
-    const token = await user.generateAuthToken();
-    res.status(200).send({ user, token });
-})
-//
+const filterObj = (obj, ...allowedFields) => {
+    const newObj = {};
 
-//CHANGE
-exports.logoutUser = catchAsync(async (req, res, next) => {
-    req.user.tokens = req.user.tokens.filter((token) => {
-        return token.token != req.token;
-    });
-    await req.user.save();
-    res.status(200).send();
-})
-//
-
-exports.addUser = catchAsync(async (req, res, next) => {
-    const item = await User.create(req.body);
-
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
+    Object.keys(obj).forEach(el => {
+        if (allowedFields.includes(el)) newObj[el] = obj[el]
     })
-})
+
+    return newObj;
+}
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const items = await User.find().populate('bought').populate('liked').populate('pictures');
@@ -56,9 +35,24 @@ exports.getUser = catchAsync(async (req, res, next) => {
     });
 })
 
-exports.editUser = catchAsync(async (req, res, next) => {
-    const item = await User.findOneAndUpdate({ _id: req.params.id },
-        req.body,
+exports.getCurrUser = catchAsync(async (req, res, next) => {
+    const item = await User.findById(req.user.id).populate('bought').populate('liked').populate('pictures');
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            item
+        }
+    });
+})
+
+exports.updateCurrUser = catchAsync(async (req, res, next) => {
+    if (req.body.password || req.body.password_confirm)
+        next(new AppError('You can not update password here', 400))
+
+    const filteredBody = filterObj(req.body, 'name', 'email', 'avatar');
+    const item = await User.findByIdAndUpdate(req.user.id,
+        filteredBody,
         {
             new: true,
             runValidators: true
@@ -73,7 +67,7 @@ exports.editUser = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-    await User.findOneAndDelete({ _id: req.params.id });
+    await User.deleteOne({ _id: req.params.id });
 
     res.status(204).json({
         status: "success"

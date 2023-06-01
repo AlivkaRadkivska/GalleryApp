@@ -1,10 +1,10 @@
 const Picture = require('./../models/picture');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync')
-const AppError = require('./../utils/appError')
+const AppError = require('../utils/appError')
 
 exports.addPicture = catchAsync(async (req, res, next) => {
-    const item = await Picture.create(req.body);
+    const item = await Picture.create({ ...req.body, artist_id: req.user.id });
 
     res.status(201).json({
         status: "success",

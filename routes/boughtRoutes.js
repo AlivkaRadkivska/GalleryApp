@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const boughtController = require('../controllers/boughtController');
-// const auth = require('.././middleware/auth');
-// router.use(auth)
+const authController = require('./../controllers/authController');
 
 
 router.route('/')
-    .post(boughtController.addBought)
+    .post(authController.protect, boughtController.addBought)
     .get(boughtController.getAllBought)
     .delete(boughtController.deleteAllBought)
 
