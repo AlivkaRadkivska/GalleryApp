@@ -1,43 +1,45 @@
 const Picture = require('./../models/picture');
-const APIFeatures = require('./../utils/apiFeatures');
-const catchAsync = require('./../utils/catchAsync')
-const AppError = require('../utils/appError')
+const Liked = require('./../models/liked');
+const factory = require('./handlerFactory');
+const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
-exports.addPicture = catchAsync(async (req, res, next) => {
-    const item = await Picture.create({ ...req.body, artist_id: req.user.id });
+//MIDDLEWARE
+exports.checkArtist = catchAsync(async (req, res, next) => {
+    const picture = await Picture.findById(req.params.id);
+    if (!picture)
+        next(new AppError('Не знайдено', 404));
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
-    })
-})
+    if (picture.artist_id != req.user.id)
+        next(new AppError('Ви не маєте доступу до чужих картин', 403));
 
-exports.getAllPictures = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Picture.find(), req.query)
-        .filter()
-        .sort()
-        .paginate();
+    next();
+});
 
-    const items = await features.query.populate('category').populate('artist');
+exports.addArtist = (req, res, next) => {
+    req.body.artist_id = req.user.id;
+    next();
+};
 
-    res.status(200).json({
-        status: "success",
-        number: items.length,
-        data: {
-            items
-        }
-    });
+exports.deletePictureConnects = catchAsync(async (req, res, next) => {
+    await Liked.deleteMany({ picture_id: req.user.id });
 
-})
+    next();
+});
+//
 
+exports.addPicture = factory.createOne(Picture);
+exports.updatePicture = factory.updateOne(Picture, ['name', 'category_id', 'tag_ids', 'status']);
+exports.deletePicture = factory.deleteOne(Picture);
+
+exports.getAllPictures = factory.getMany(Picture);
+exports.getPicture = factory.getOne(Picture);
+
+//CHANGE
 exports.getPicturesStats = catchAsync(async (req, res, next) => {
     const stats = await Picture.aggregate([
-        // { $match: { status: 'active' } },
         {
             $group: {
-                // _id: { $toUpper: '$category' },
                 _id: null,
                 numberOfPictures: { $sum: 1 },
                 avgPrice: { $avg: '$price' },
@@ -53,55 +55,8 @@ exports.getPicturesStats = catchAsync(async (req, res, next) => {
             stats
         }
     });
-})
+});
+//
 
-exports.getPicture = catchAsync(async (req, res, next) => {
-    const item = await Picture.findById(req.params.id);
-
-    if (!item)
-        next(new AppError('Picture not found', 404))
-    else
-        res.status(200).json({
-            status: "success",
-            data: {
-                item
-            }
-        });
-})
-
-exports.editPicture = catchAsync(async (req, res, next) => {
-    // const item = await Picture.findOneAndUpdate({ _id: req.params.id, artist: req.user._id },
-    const item = await Picture.findOneAndUpdate({ _id: req.params.id },
-        req.body,
-        {
-            new: true,
-            runValidators: true
-        })
-
-    res.status(200).json({
-        status: "success",
-        data: {
-            item
-        }
-    });
-})
-
-exports.deletePicture = catchAsync(async (req, res, next) => {
-    //const item = await Picture.findOneAndDelete({ _id: req.params.id, artist: req.user._id });
-    const item = await Picture.findOneAndDelete({ _id: req.params.id });
-
-    if (!item)
-        next(new AppError('Picture not found', 404))
-    else
-        res.status(204).json({
-            status: "success"
-        });
-})
-
-exports.deleteAllPictures = catchAsync(async (req, res, next) => {
-    await Picture.deleteMany()
-
-    res.status(204).json({
-        status: "success"
-    });
-})
+//ONLY FOR TEST
+exports.deleteAllPictures = factory.deleteMany(Picture);

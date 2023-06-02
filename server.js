@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 process.on('uncaughtException', err => {
-    console.log('Exception!', err.name, err.message);
+    console.log('Exception!', err.name, err.message, err.stack);
     console.log('Shutting down...');
     process.exit(1);
 })

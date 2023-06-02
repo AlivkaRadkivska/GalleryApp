@@ -1,58 +1,41 @@
 const Liked = require('./../models/liked');
+const Picture = require('./../models/picture');
+const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
-exports.addLiked = catchAsync(async (req, res, next) => {
-    const item = await Liked.create({ ...req.body, user_id: req.user.id })
+//MIDDLEWARE
+exports.checkAddingByOwner = catchAsync(async (req, res, next) => {
+    const picture = await Picture.findById(req.body.picture_id);
+    if (picture === null)
+        next(new AppError('Не знайдено', 404));
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
-    })
-})
+    if (picture.artist_id === req.user.id)
+        next(new AppError('Ви не можете вподобати власну картину', 400))
 
-exports.getAllLiked = catchAsync(async (req, res, next) => {
-    const items = await Liked.find().populate('picture');
+    next();
+});
 
-    res.status(200).json({
-        status: "success",
-        number: items.length,
-        data: {
-            items
-        }
-    });
-})
+exports.denyAccess = catchAsync(async (req, res, next) => {
+    const liked = await Liked.findById(req.params.id);
+    if (!liked)
+        next(new AppError('Не знайдено', 404));
 
-exports.getLiked = catchAsync(async (req, res, next) => {
-    const item = await Liked.findById(req.params.id).populate('picture');
+    if (liked.user_id != req.user.id)
+        next(new AppError('Ви не можете взаємодіяти з цим записом', 403))
 
-    if (!item)
-        next(new AppError('Liked not found', 404))
-    else
-        res.status(200).json({
-            status: "success",
-            data: {
-                item
-            }
-        });
-})
+    next();
+});
 
-exports.deleteLiked = catchAsync(async (req, res, next) => {
-    const item = await Liked.findOneAndDelete({ _id: req.params.id });
+exports.addUser = (req, res, next) => {
+    req.body.user_id = req.user.id;
+    next();
+};
+//
 
-    if (!item)
-        next(new AppError('Liked not found', 404))
-    else
-        res.status(204).json({
-            status: "success"
-        });
-})
+exports.addLiked = factory.createOne(Liked);
+exports.getLiked = factory.getOne(Liked);
+exports.deleteLiked = factory.deleteOne(Liked);
 
-exports.deleteAllLiked = catchAsync(async (req, res, next) => {
-    await Liked.deleteMany()
-
-    res.status(204).json({
-        status: "success"
-    });
-})
+exports.getAllLiked = factory.getMany(Liked); //ONLY FOR TEST
+exports.deleteAllLiked = factory.deleteMany(Liked); //ONLY FOR TEST

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const pictureSchema = new mongoose.Schema({
     name: {
@@ -13,8 +13,8 @@ const pictureSchema = new mongoose.Schema({
         required: true,
         trim: true,
         enum: {
-            values: ['square', 'horizontal', 'vertical'],
-            message: 'Format has to be either: square, horizontal, vertical'
+            values: ['квадрат', 'горизонтальний', 'вертикальний'],
+            message: 'Оберіть один з варіантів: квадрат, горизонтальний, вертикальний'
         }
     },
     demo_img: {
@@ -34,7 +34,7 @@ const pictureSchema = new mongoose.Schema({
             validator: function (val) {
                 return val > 0;
             },
-            message: 'Price cannot be below 1'
+            message: 'Ціна не може бути від\'ємною'
         }
     },
     status: {
@@ -42,31 +42,28 @@ const pictureSchema = new mongoose.Schema({
         default: 'checking',
         enum: {
             values: ['checking', 'active', 'hidden', 'rejected'],
-            message: 'Status has to be either: checking, active, hidden, rejected'
+            message: 'Оберіть один з варіантів: checking, active, hidden, rejected'
         }
     },
     artist_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
         required: true
     },
     category_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
+        ref: 'Category',
         required: true
     },
     adding_date: {
         type: Date,
         default: Date.now()
     },
-    tags: [
-        {
-            tag: {
-                type: String,
-                required: true,
-            },
-        },
-    ],
+    tag_ids: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tag',
+        required: true,
+    }],
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
@@ -86,10 +83,17 @@ pictureSchema.virtual('artist', {
     justOne: true
 })
 
-pictureSchema.pre(/^find/, function (next) {
-    this.find({ status: 'active' })
+pictureSchema.virtual('tags', {
+    ref: 'Tag',
+    localField: 'tag_ids',
+    foreignField: '_id'
+})
 
+pictureSchema.pre(/^find/, function (next) {
+    this.find().populate({ path: 'category', select: '-__v' })
+        .populate({ path: 'artist', select: '-__v -role -avatar' })
+        .populate({ path: 'tags', select: '-__v' });
     next();
 })
 
-module.exports = mongoose.model("Picture", pictureSchema)
+module.exports = mongoose.model('Picture', pictureSchema)

@@ -1,74 +1,23 @@
 const Category = require('./../models/category');
+const Picture = require('./../models/picture');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const factory = require('./handlerFactory');
 
-exports.addCategory = catchAsync(async (req, res, next) => {
-    const item = await Category.create(req.body)
+//MIDDLEWARE
+exports.checkUsingForDeleting = catchAsync(async (req, res, next) => {
+    const picture = await Picture.findOne({ category_id: req.params.id });
+    if (picture)
+        next(new AppError('Ця категорія використовується, її не можна видалити', 400));
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
-    })
-})
+    next();
+});
+//
 
-exports.getAllCategories = catchAsync(async (req, res, next) => {
-    const items = await Category.find().populate('pictures');
+exports.addCategory = factory.createOne(Category);
+exports.updateCategory = factory.updateOne(Category);
+exports.getAllCategories = factory.getMany(Category);
+exports.deleteCategory = factory.deleteOne(Category);
 
-    res.status(200).json({
-        status: "success",
-        number: items.length,
-        data: {
-            items
-        }
-    });
-})
-
-exports.getCategory = catchAsync(async (req, res, next) => {
-    const item = await Category.findById(req.params.id).populate('pictures');
-
-    if (!item)
-        next(new AppError('Category not found', 404))
-    else
-        res.status(200).json({
-            status: "success",
-            data: {
-                item
-            }
-        });
-})
-
-exports.editCategory = catchAsync(async (req, res, next) => {
-    const item = await Category.findOneAndUpdate({ _id: req.params.id },
-        req.body,
-        {
-            new: true,
-            runValidators: true
-        })
-
-    res.status(200).json({
-        status: "success",
-        data: {
-            item
-        }
-    });
-})
-
-exports.deleteCategory = catchAsync(async (req, res, next) => {
-    const item = await Category.findOneAndDelete({ _id: req.params.id }).populate('pictures');
-
-    if (!item)
-        next(new AppError('Category not found', 404))
-    else
-        res.status(204).json({
-            status: "success"
-        });
-})
-
-exports.deleteAllCategories = catchAsync(async (req, res, next) => {
-    await Category.deleteMany().populate('pictures')
-
-    res.status(204).json({
-        status: "success"
-    });
-})
+//ONLY FOR TEST
+exports.deleteAllCategories = factory.deleteMany(Category);

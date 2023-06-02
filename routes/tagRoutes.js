@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const tagController = require('../controllers/tagController');
+const tagController = require('./../controllers/tagController');
+const authController = require('./../controllers/authController');
 
+router.get('/', tagController.getAllTags)
+
+router.use(authController.protect, authController.restrictTo('admin'));
 
 router.route('/')
     .post(tagController.addTag)
-    .get(tagController.getAllTags)
-    .delete(tagController.deleteAllTags)
+    .delete(tagController.deleteAllTags) //ONLY FOR TEST
 
 router.route('/:id')
-    .get(tagController.getTag)
-    .patch(tagController.editTag)
-    .delete(tagController.deleteTag)
+    .patch(tagController.updateTag)
+    .delete(tagController.checkUsingForDeleting, tagController.deleteTag)
 
-module.exports = router
+module.exports = router;

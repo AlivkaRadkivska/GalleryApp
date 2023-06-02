@@ -11,20 +11,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        validate: [validator.isEmail, 'Email is not valid']
+        validate: [validator.isEmail, 'Електрона пошта не пройшла валідацію']
     },
     password: {
         type: String,
         trim: true,
         required: true,
         minlength: 5,
-        validate: {
-            validator: function (val) {
-                return val != 'password';
-            },
-            message: '"password" can\'t be your password'
-        },
-        // select: false
+        select: false
     },
     password_confirm: {
         type: String,
@@ -32,10 +26,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 5,
         validate: {
-            validator: function (val) { //only for save/create
+            validator: function (val) {
                 return val === this.password;
             },
-            message: 'Passwords should be the same'
+            message: 'Пароль має бути однаковим'
         }
     },
     password_changed_at: Date,
@@ -58,52 +52,42 @@ const userSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
+userSchema.virtual('pictures', {
+    ref: 'Picture',
+    localField: '_id',
+    foreignField: 'artist_id'
+});
+
 userSchema.virtual('liked', {
     ref: 'Liked',
     localField: '_id',
     foreignField: 'user_id'
-})
+});
 
 userSchema.virtual('bought', {
     ref: 'Bought',
     localField: '_id',
     foreignField: 'user_id'
-})
-
-userSchema.virtual('pictures', {
-    ref: 'Picture',
-    localField: '_id',
-    foreignField: 'artist_id'
-})
+});
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-
     this.password = await bcrypt.hash(this.password, 9);
     this.password_confirm = undefined;
 
     next();
 });
 
-userSchema.pre(/^delete/, async function (next) {
-    console.log(this._id)
-    await this.model('Liked').deleteMany({ user_id: this._id });
-    await this.model('Bought').deleteMany({ user_id: this._id });
+userSchema.pre(/^findOne/, function (next) {
+    this.populate('bought').populate('liked');
+    if (this.role === 'artist')
+        this.populate('pictures');
 
     next();
-})
+});
 
 userSchema.methods.checkPassword = async function (candidate, password) {
     return await bcrypt.compare(candidate, password);
-};
-
-userSchema.methods.changedPassword = function (JWTTimestamp) {
-    if (this.password_changed_at) {
-        const changedTimestamp = parseInt(this.password_changed_at.getTime() / 1000, 10);
-        return JWTTimestamp < changedTimestamp;
-    }
-
-    return false;
 };
 
 module.exports = mongoose.model('User', userSchema);

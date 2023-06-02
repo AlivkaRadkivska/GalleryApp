@@ -1,58 +1,41 @@
 const Bought = require('./../models/bought');
+const Picture = require('./../models/picture');
+const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
-exports.addBought = catchAsync(async (req, res, next) => {
-    const item = await Bought.create({ ...req.body, user_id: req.user.id })
+//MIDDLEWARE
+exports.checkAddingByOwner = catchAsync(async (req, res, next) => {
+    const picture = await Picture.findById(req.body.picture);
+    if (picture === null)
+        next(new AppError('Не знайдено', 404));
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
-    })
-})
+    if (picture.artist_id === req.user.id)
+        next(new AppError('Ви не можете придбати власну картину', 400))
 
-exports.getAllBought = catchAsync(async (req, res, next) => {
-    const items = await Bought.find().populate('picture');
+    next();
+});
 
-    res.status(200).json({
-        status: "success",
-        number: items.length,
-        data: {
-            items
-        }
-    });
-})
+exports.denyAccess = catchAsync(async (req, res, next) => {
+    const bought = await Bought.findById(req.params.id);
+    if (!bought)
+        next(new AppError('Не знайдено', 404));
 
-exports.getBought = catchAsync(async (req, res, next) => {
-    const item = await Bought.findById(req.params.id).populate('picture');
+    if (bought.user_id != req.user.id)
+        next(new AppError('Ви не можете взаємодіяти з цим записом', 403))
 
-    if (!item)
-        next(new AppError('Bought not found', 404))
-    else
-        res.status(200).json({
-            status: "success",
-            data: {
-                item
-            }
-        });
-})
+    next();
+});
 
-exports.deleteBought = catchAsync(async (req, res, next) => {
-    const item = await Bought.findOneAndDelete({ _id: req.params.id });
+exports.addUser = (req, res, next) => {
+    req.body.user_id = req.user.id;
+    next();
+};
+//
 
-    if (!item)
-        next(new AppError('Bought not found', 404))
-    else
-        res.status(204).json({
-            status: "success"
-        });
-})
+exports.addBought = factory.createOne(Bought);
+exports.getBought = factory.getOne(Bought);
+exports.deleteBought = factory.deleteOne(Bought);
 
-exports.deleteAllBought = catchAsync(async (req, res, next) => {
-    await Bought.deleteMany()
-
-    res.status(204).json({
-        status: "success"
-    });
-})
+exports.getAllBought = factory.getMany(Bought); //ONLY FOR TEST
+exports.deleteAllBought = factory.deleteMany(Bought); //ONLY FOR TEST

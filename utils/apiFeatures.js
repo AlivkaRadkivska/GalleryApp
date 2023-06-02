@@ -5,21 +5,21 @@ class APIFeatures {
     }
 
     filter() {
-        const queryObj = { ...this.queryStr }
-        const excludedFields = ['page', 'sort', 'limit', 'fields']
-        excludedFields.forEach(el => delete queryObj[el])
+        const queryObj = { ...this.queryStr };
+        const excludedFields = ['page', 'sort', 'limit', 'fields'];
+        excludedFields.forEach(el => delete queryObj[el]);
 
         let queryString = JSON.stringify(queryObj);
-        queryString = JSON.parse(queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`))
+        queryString = JSON.parse(queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`));
 
-        this.query = this.query.find(queryString)
+        this.query = this.query.find(queryString);
 
         return this;
     }
 
     sort() {
-        if (this.queryStr.sort) //price: price asc; -price: price desc
-            this.query = this.query.sort(this.query.sort)
+        if (this.queryStr.sort)
+            this.query = this.query.sort(this.queryStr.sort);
 
         return this;
     }

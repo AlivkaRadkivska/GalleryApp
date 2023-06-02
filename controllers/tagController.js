@@ -1,74 +1,25 @@
 const Tag = require('./../models/tag');
+const Picture = require('./../models/picture');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const factory = require('./handlerFactory');
 
-exports.addTag = catchAsync(async (req, res, next) => {
-    const item = await Tag.create(req.body)
+//MIDDLEWARE
+exports.checkUsingForDeleting = catchAsync(async (req, res, next) => {
+    console.log(req.params.id)
+    const picture = await Picture.findOne({ tag_ids: req.params.id });
+    console.log(picture)
+    if (picture)
+        next(new AppError('Цей тег використовується, його не можна видалити', 400));
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            item
-        }
-    })
-})
+    next();
+});
+//
 
-exports.getAllTags = catchAsync(async (req, res, next) => {
-    const items = await Tag.find();
+exports.addTag = factory.createOne(Tag);
+exports.updateTag = factory.updateOne(Tag);
+exports.getAllTags = factory.getMany(Tag);
+exports.deleteTag = factory.deleteOne(Tag);
 
-    res.status(200).json({
-        status: "success",
-        number: items.length,
-        data: {
-            items
-        }
-    });
-})
-
-exports.getTag = catchAsync(async (req, res, next) => {
-    const item = await Tag.findById(req.params.id);
-
-    if (!item)
-        next(new AppError('Tag not found', 404))
-    else
-        res.status(200).json({
-            status: "success",
-            data: {
-                item
-            }
-        });
-})
-
-exports.editTag = catchAsync(async (req, res, next) => {
-    const item = await Tag.findOneAndUpdate({ _id: req.params.id },
-        req.body,
-        {
-            new: true,
-            runValidators: true
-        })
-
-    res.status(200).json({
-        status: "success",
-        data: {
-            item
-        }
-    });
-})
-
-exports.deleteTag = catchAsync(async (req, res, next) => {
-    const item = await Tag.findOneAndDelete({ _id: req.params.id });
-
-    if (!item)
-        next(new AppError('Tag not found', 404))
-    else
-        res.status(204).json({
-            status: "success"
-        });
-})
-
-exports.deleteAllTags = catchAsync(async (req, res, next) => {
-    await Tag.deleteMany()
-
-    res.status(204).json({
-        status: "success"
-    });
-})
+//ONLY FOR TEST
+exports.deleteAllTags = factory.deleteMany(Tag);
