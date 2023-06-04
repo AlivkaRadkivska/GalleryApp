@@ -1,4 +1,9 @@
-.container{
+body{
+    background-color: #202020;
+    color: #ffffff;
+}
+
+.page{
     display: flex;
     flex-direction: column;
     align-items: center;

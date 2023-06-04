@@ -25,7 +25,8 @@ const pictureSchema = new mongoose.Schema({
     full_img: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        select: false
     },
     price: {
         type: Number,
@@ -81,19 +82,19 @@ pictureSchema.virtual('artist', {
     localField: 'artist_id',
     foreignField: '_id',
     justOne: true
-})
+});
 
 pictureSchema.virtual('tags', {
     ref: 'Tag',
     localField: 'tag_ids',
     foreignField: '_id'
-})
+});
 
 pictureSchema.pre(/^find/, function (next) {
     this.find().populate({ path: 'category', select: '-__v' })
         .populate({ path: 'artist', select: '-__v -role -avatar' })
         .populate({ path: 'tags', select: '-__v' });
     next();
-})
+});
 
-module.exports = mongoose.model('Picture', pictureSchema)
+module.exports = mongoose.model('Picture', pictureSchema);

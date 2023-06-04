@@ -9,7 +9,7 @@ router.use(authController.protect, authController.restrictTo('admin'));
 
 router.route('/')
     .post(categoryController.addCategory)
-    .delete(categoryController.deleteAllCategories) //ONLY FOR TEST
+    .delete(categoryController.deleteAllCategories) //!ONLY FOR TEST
 
 router.route('/:id')
     .patch(categoryController.updateCategory)

@@ -4,8 +4,12 @@ html
     link(rel='stylesheet' href='css/style.css')
     title Галерея
 
-    body.container
-        h1 Тестова сторінка
-//   h1= Title
-//   p Картина: #{picture}
-//   p Користувач: #{user}
+    body.page
+        //header
+        include _header
+
+        //content
+        block content
+
+        //Footer
+        include _footer

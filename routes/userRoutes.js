@@ -4,9 +4,9 @@ const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
 
 router.route('/')
-  // .get(authController.protect, authController.restrictTo('admin'), userController.getAllUsers)
-  .get(userController.getAllUsers) //ONLY FOR TEST
-  .delete(userController.deleteAllUsers) //ONLY FOR TEST
+  //? .get(authController.protect, authController.restrictTo('admin'), userController.getAllUsers)
+  .get(userController.getAllUsers) //!ONLY FOR TEST
+  .delete(userController.deleteAllUsers) //!ONLY FOR TEST
 
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);

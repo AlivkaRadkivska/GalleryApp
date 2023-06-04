@@ -12,7 +12,7 @@ router.route('/')
         pictureController.addArtist,
         pictureController.addPicture)
     .get(pictureController.getAllPictures)
-    .delete(pictureController.deleteAllPictures) //ONLY FOR TEST
+    .delete(pictureController.deleteAllPictures) //!ONLY FOR TEST
 
 router.route('/:id')
     .get(pictureController.getPicture)

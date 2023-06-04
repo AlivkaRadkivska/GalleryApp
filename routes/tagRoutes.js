@@ -9,7 +9,7 @@ router.use(authController.protect, authController.restrictTo('admin'));
 
 router.route('/')
     .post(tagController.addTag)
-    .delete(tagController.deleteAllTags) //ONLY FOR TEST
+    .delete(tagController.deleteAllTags) //!ONLY FOR TEST
 
 router.route('/:id')
     .patch(tagController.updateTag)

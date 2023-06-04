@@ -4,7 +4,7 @@ const likedController = require('./../controllers/likedController');
 const authController = require('./../controllers/authController');
 
 
-router.route('/') //ONLY FOR TEST
+router.route('/') //!ONLY FOR TEST
     .get(likedController.getAllLiked)
     .delete(likedController.deleteAllLiked)
 

@@ -4,7 +4,7 @@ const User = require('./../models/user');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-//MIDLEWARE
+//*MIDLEWARE
 exports.protect = catchAsync(async (req, res, next) => {
     let token;
 
@@ -32,7 +32,7 @@ exports.restrictTo = (...roles) => {
         next();
     };
 };
-//
+//*
 
 const createToken = id => {
     return jwt.sign({ id: id }, process.env.JWT_KEY, {

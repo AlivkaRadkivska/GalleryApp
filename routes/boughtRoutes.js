@@ -4,7 +4,7 @@ const boughtController = require('./../controllers/boughtController');
 const authController = require('./../controllers/authController');
 
 
-router.route('/') //ONLY FOR TEST
+router.route('/') //!ONLY FOR TEST
     .get(boughtController.getAllBought)
     .delete(boughtController.deleteAllBought)
 

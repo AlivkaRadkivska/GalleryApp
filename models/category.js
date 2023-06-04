@@ -12,10 +12,11 @@ const categorySchema = new mongoose.Schema({
     toObject: { virtuals: true },
 });
 
-categorySchema.virtual('pictures', {
+categorySchema.virtual('number_of_pictures', {
     ref: 'Picture',
     localField: '_id',
-    foreignField: 'category_id'
+    foreignField: 'category_id',
+    count: true
 });
 
 module.exports = mongoose.model('Category', categorySchema)

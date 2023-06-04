@@ -1,0 +1,19 @@
+extends base
+
+block content
+    h1= title 
+
+    h2 Картини:
+    each item in pictures
+        p Картина: #{item.name}
+        pre= item
+
+    h2 Категорії:
+    each item in categories
+        if item.number_of_pictures > 0
+            pre= item
+        
+    h2 Теги:
+    each item in tags
+        if item.number_of_pictures > 0
+            pre= item
