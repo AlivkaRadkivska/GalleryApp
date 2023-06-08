@@ -3,16 +3,18 @@ const router = express.Router();
 const categoryController = require('./../controllers/categoryController');
 const authController = require('./../controllers/authController');
 
-router.get('/', categoryController.getAllCategories)
+router.get('/', categoryController.getAllCategories);
 
 router.use(authController.protect, authController.restrictTo('admin'));
 
-router.route('/')
-    .post(categoryController.addCategory)
-    .delete(categoryController.deleteAllCategories) //!ONLY FOR TEST
+router.route('/').post(categoryController.addCategory);
 
-router.route('/:id')
-    .patch(categoryController.updateCategory)
-    .delete(categoryController.checkUsingForDeleting, categoryController.deleteCategory)
+router
+  .route('/:id')
+  .patch(categoryController.updateCategory)
+  .delete(
+    categoryController.checkUsingForDeleting,
+    categoryController.deleteCategory
+  );
 
 module.exports = router;

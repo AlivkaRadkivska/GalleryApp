@@ -6,33 +6,29 @@ const factory = require('./handlerFactory');
 const AppError = require('./../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-//MIDDLEWARE
+//*MIDDLEWARE
 exports.setCurrUser = (req, res, next) => {
-    req.params.id = req.user.id;
-    next();
+  req.params.id = req.user.id;
+  next();
 };
 
 exports.checkPasswordUpdating = (req, res, next) => {
-    if (req.body.password || req.body.password_confirm)
-        next(new AppError('Ви не можете змінити пароль тут', 400));
-    next();
+  if (req.body.password || req.body.password_confirm)
+    next(new AppError('Ви не можете змінити пароль тут', 400));
+  next();
 };
 
 exports.deleteUserConnects = catchAsync(async (req, res, next) => {
-    await Liked.deleteMany({ user_id: req.user.id });
-    await Bought.deleteMany({ user_id: req.user.id });
-    await Picture.deleteMany({ artist_id: req.user.id });
+  await Liked.deleteMany({ user_id: req.user.id });
+  await Bought.deleteMany({ user_id: req.user.id });
+  await Picture.deleteMany({ artist_id: req.user.id });
 
-    next();
+  next();
 });
-//
+//*
 
 exports.getAllUsers = factory.getMany(User);
 exports.getUser = factory.getOne(User);
 
 exports.getCurrUser = factory.getOne(User);
 exports.updateCurrUser = factory.updateOne(User, ['name', 'email', 'avatar']);
-exports.deleteCurrUser = factory.deleteOne(User);
-
-//ONLY FOR TEST
-exports.deleteAllUsers = factory.deleteMany(User);

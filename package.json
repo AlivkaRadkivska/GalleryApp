@@ -1,29 +1,38 @@
 {
-	"name": "gallery",
-	"version": "1.0.0",
-	"description": "application to work with gallery database",
-	"main": "app.js",
-	"scripts": {
-		"start": "node server.js",
-		"dev": "nodemon server.js",
-		"prod": "SET ENV_MODE=production& nodemon server.js",
-		"debug": "ndb server.js"
-	},
-	"author": "Alina Radkivska",
-	"license": "ISC",
-	"dependencies": {
-		"bcrypt": "^5.1.0",
-		"dotenv": "^16.0.3",
-		"express": "^4.18.2",
-		"express-mongo-sanitize": "^2.2.0",
-		"hpp": "^0.2.3",
-		"jsonwebtoken": "^9.0.0",
-		"mongoose": "^7.0.5",
-		"morgan": "^1.10.0",
-		"pug": "^3.0.2",
-		"validator": "^13.9.0"
-	},
-	"devDependencies": {
-		"ndb": "^1.1.5"
-	}
+  "name": "gallery",
+  "version": "1.0.0",
+  "description": "application to work with gallery database",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "SET ENV_MODE=development& nodemon server.js",
+    "prod": "SET ENV_MODE=production& nodemon server.js",
+    "debug": "ndb server.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
+  },
+  "author": "Alina Radkivska",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "authentication.js": "^2.1.0",
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.0",
+    "login.js": "^1.2.0",
+    "mongoose": "^7.0.5",
+    "morgan": "^1.10.0",
+    "parcel-bundler": "^1.12.5",
+    "pug": "^3.0.2",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "ndb": "^1.1.5",
+    "prettier": "2.8.8",
+    "tailwindcss": "^3.3.2"
+  }
 }

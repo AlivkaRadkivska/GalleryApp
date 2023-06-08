@@ -1,3 +1,50 @@
-header.header
-    a(header='/') Головна
-    a(header='/me') Профіль
+header.header.row-space-between
+  a.logo.row(href='/')
+    .loader
+    .col-left
+      p.logo-title Картинна галерея
+      a.link(href='/statistic') Статистика галереї ⇢
+
+  if !user
+    .user
+      a.btn(href='/signup') Зареєструватися
+      span |
+      a.btn.accent(href='/login') Увійти
+  else
+    .user.dropdown
+      .col-right
+        p.user-name.txt-purple= user.name
+        p.user-email.txt-gray= user.email
+
+      img.user-avatar(src=`imgs/users/${user.avatar}`)
+      .dropdown-content.col-center
+        if user.role != 'admin'
+          p.desc.col-left Картини
+          a(href="#") Мої вподобані
+          a(href="#") Мої куплені
+        if user.role === 'artist'
+          a(href="#") Мої картини
+
+        p.desc.col-left Профіль
+        a(href="/update-info") Змінити дані
+        a(href="#") Змінити пароль
+        if user.role != 'admin'
+          div
+            a.txt-red#delete-me-btn Видалити профіль
+            div.modal
+              div.modal-content.col-center
+                span.close &times;
+                p.modal-txt Якщо ви видалите профіль, очиститься історія всіх куплених та вподобаних вами картин. 
+                  if user.role === 'artist' 
+                    span.txt-red Усі ваші картини, завантажені на сайт, також видаляться.
+                .row-space-between
+                  p.modal-txt.txt-purple Ви справді цього хочете?
+                  p#delete-me-confirm.btn Так
+
+        if user.role === 'admin'
+          p.desc.col-left Адміністрація
+          a(href="#") Повідомлення
+          a(href="#") Категорії
+          a(href="#") Теги
+
+        a.txt-green.col-right.margin-top#logout-btn Вийти

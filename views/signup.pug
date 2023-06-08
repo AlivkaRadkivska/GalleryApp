@@ -1,0 +1,48 @@
+extends base
+
+block content
+  .container
+    form.form-center.main#signup-form
+      .main-title= title
+      .inputbox
+        input#name(required type="text" name="name")
+        span Ім'я користувача*
+        i
+      .inputbox
+        input#email(required type="email" name="email")
+        span E-mail*
+        i
+      .inputbox
+        input#password(required type="password" name="password")
+        span Пароль*
+        i
+      .inputbox
+        input#password_confirm(required type="password" name="password_confirm")
+        span Підтвердити пароль*
+        i
+      .col-left.margin-top
+        span.form-label Роль*
+        .row-center
+          label.checkbox-label(for='user') 
+            input#user.checkbox(type='radio' name='role' value='user' checked)
+            span Користувач
+          label.checkbox-label(for='artist') 
+            input#artist.checkbox(type='radio' name='role' value='artist')
+            span Художник
+      .col-left.margin-top
+        span.form-label Фото профілю
+        .file-input-box
+          label() 
+            span ~ обрати ~
+            input#avatar.file-input(type="file" name="avatar")
+
+      .col-left.margin-top
+        p.desc *Обов'язкове поле
+
+      p.desc.txt-red#msg
+
+      .margin-top
+      input.btn.accent(type='submit' value='Зареєструватись')
+
+block append scripts 
+  script(src='/js/file-input-styling.js')
