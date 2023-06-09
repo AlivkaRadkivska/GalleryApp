@@ -45,7 +45,6 @@ exports.getPicturesStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        numberOfPictures: { $sum: 1 },
         avgPrice: { $avg: '$price' },
         minPrice: { $min: '$price' },
         maxPrice: { $max: '$price' },

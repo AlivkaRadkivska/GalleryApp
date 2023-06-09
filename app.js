@@ -15,7 +15,7 @@ app.use(mongoSanitize());
 //clean dublicated params//
 app.use(
   hpp({
-    whitelist: ['format', 'artist_id', 'category_id'],
+    whitelist: ['format', 'artist_id', 'category_id', 'tag_ids'],
   })
 );
 
@@ -38,13 +38,6 @@ const tagRouter = require('./routes/tagRoutes');
 const likedRouter = require('./routes/likedRoutes');
 const boughtRouter = require('./routes/boughtRoutes');
 const viewsRouter = require('./routes/viewsRoutes');
-
-//!Only for test
-// app.use((req, res, next) => {
-//   console.log(req.cookies);
-//   next();
-// });
-//!
 
 //?Routes
 app.use('/api/pictures', pictureRouter);

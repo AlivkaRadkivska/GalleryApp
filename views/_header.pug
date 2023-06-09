@@ -16,18 +16,18 @@ header.header.row-space-between
         p.user-name.txt-purple= user.name
         p.user-email.txt-gray= user.email
 
-      img.user-avatar(src=`imgs/users/${user.avatar}`)
+      img.user-avatar(src=`/imgs/users/${user.avatar}`)
       .dropdown-content.col-center
         if user.role != 'admin'
           p.desc.col-left Картини
-          a(href="#") Мої вподобані
-          a(href="#") Мої куплені
+          a(href="/liked") Мої вподобані
+          a(href="/bought") Мої куплені
         if user.role === 'artist'
-          a(href="#") Мої картини
+          a(href="/my-pictures") Мої картини
 
         p.desc.col-left Профіль
         a(href="/update-info") Змінити дані
-        a(href="#") Змінити пароль
+        a(href="/update-password") Змінити пароль
         if user.role != 'admin'
           div
             a.txt-red#delete-me-btn Видалити профіль
@@ -43,8 +43,9 @@ header.header.row-space-between
 
         if user.role === 'admin'
           p.desc.col-left Адміністрація
-          a(href="#") Повідомлення
-          a(href="#") Категорії
-          a(href="#") Теги
+          a(href="/admin/messages") Повідомлення
+          a(href="/admin/categories") Категорії
+          a(href="/admin/tags") Теги
+          a(href="/admin/db-backup") Завантажити рез. копію БД
 
         a.txt-green.col-right.margin-top#logout-btn Вийти

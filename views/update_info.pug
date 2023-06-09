@@ -1,0 +1,31 @@
+extends base
+
+block content
+  .container
+    form.form-center.main#update-user-form
+      .main-title= title
+      .inputbox
+        input#name(required type="text" name="name" value=`${user.name}`)
+        span Ім'я користувача*
+        i
+      .inputbox
+        input#email(required type="email" name="email" value=`${user.email}`)
+        span E-mail*
+        i
+      .col-left.margin-top
+        span.form-label Фото профілю
+        .file-input-box
+          label() 
+            span= `~ ${user.avatar.slice(0, 5)}...${user.avatar.slice(-6, user.avatar.length)} ~`
+            input#avatar.file-input(type="file" name="avatar" accept="image/*")
+
+      .col-left.margin-top
+        p.desc *Обов'язкове поле
+
+      p.desc.txt-red#msg
+
+      .margin-top
+      input.btn.accent(type='submit' value='Редагувати')
+
+block append scripts 
+  script(src='/js/file-input-styling.js')

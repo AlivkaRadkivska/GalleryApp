@@ -69,6 +69,7 @@ const pictureSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    message: { type: String },
   },
   {
     toJSON: { virtuals: true },

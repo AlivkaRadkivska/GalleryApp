@@ -5,7 +5,7 @@ const authController = require('./../controllers/authController');
 
 router.use(authController.checkLoggedUser);
 
-router.get('/', viewsController.getMainPage);
+router.get('/', viewsController.regexSearch, viewsController.getMainPage);
 router.get(
   '/login',
   authController.restrictToLogged,
@@ -15,6 +15,16 @@ router.get(
   '/signup',
   authController.restrictToLogged,
   viewsController.getSignupPage
+);
+router.get(
+  '/update-info',
+  authController.protect,
+  viewsController.getUpdateInfoPage
+);
+router.get(
+  '/update-password',
+  authController.protect,
+  viewsController.getUpdatePassPage
 );
 
 module.exports = router;

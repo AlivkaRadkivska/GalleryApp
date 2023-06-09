@@ -30,8 +30,9 @@ const sendErrDev = (err, req, res) => {
     });
 
   return res.status(err.statusCode).render('error', {
+    title: 'Помилка',
     code: err.statusCode,
-    title: err.message,
+    message: err.message,
   });
 };
 
@@ -44,8 +45,9 @@ const sendErrProd = (err, req, res) => {
 
   console.error('ERROR', err);
   return res.status(500).render('error', {
+    title: 'Помилка',
     code: 500,
-    title: 'Виникли якісь негаразди...',
+    message: 'Виникли якісь негаразди...',
   });
 };
 

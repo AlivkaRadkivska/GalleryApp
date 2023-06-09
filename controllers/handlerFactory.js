@@ -26,9 +26,9 @@ exports.updateOne = (Model, allowedFields = null) =>
       runValidators: true,
     });
 
-    if (!item) next(new AppError('Не знайдено', 404));
+    if (!item) return next(new AppError('Не знайдено', 404));
     else
-      res.status(200).json({
+      return res.status(200).json({
         status: 'success',
         data: {
           item,
@@ -52,10 +52,7 @@ exports.getOne = (Model) =>
 
 exports.getMany = (Model, params = {}) =>
   catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Model.find(params), req.query)
-      .filter()
-      .sort()
-      .paginate();
+    const features = new APIFeatures(Model.find(params), req.query).filter().sort().paginate();
 
     const items = await features.query;
 

@@ -7,6 +7,7 @@ export const deleteMe = async () => {
       url: 'http://localhost:3000/api/users/me',
     });
 
+    console.log(res.data);
     window.setTimeout(() => {
       location.assign('/');
     }, 100);

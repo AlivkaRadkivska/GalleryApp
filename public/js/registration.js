@@ -1,27 +1,11 @@
 import axios from 'axios';
 
-export const signup = async (
-  name,
-  email,
-  password,
-  password_confirm,
-  role,
-  avatar
-) => {
+export const signup = async (data) => {
   try {
-    if (avatar.length < 1) avatar = undefined;
-
     const res = await axios({
       method: 'POST',
       url: 'http://localhost:3000/api/users/signup',
-      data: {
-        name,
-        email,
-        password,
-        password_confirm,
-        role,
-        avatar,
-      },
+      data,
     });
 
     if (res.data.status === 'success') {

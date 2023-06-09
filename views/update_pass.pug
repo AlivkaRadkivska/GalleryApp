@@ -1,0 +1,29 @@
+extends base
+
+block content
+  .container
+    form.form-center.main#update-pass-form
+      .main-title= title
+      .inputbox
+        input#curr_password(required type="password" name="curr_password")
+        span Поточний пароль*
+        i
+      .inputbox
+        input#password(required type="password" name="password")
+        span Новий пароль*
+        i
+      .inputbox
+        input#password_confirm(required type="password" name="password_confirm")
+        span Підтвердити новий пароль*
+        i
+
+      .col-left.margin-top
+        p.desc *Обов'язкове поле
+
+      p.desc.txt-red#msg
+
+      .margin-top
+      input.btn.accent(type='submit' value='Редагувати')
+
+block append scripts 
+  script(src='/js/file-input-styling.js')
