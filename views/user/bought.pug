@@ -1,0 +1,40 @@
+extends ../template/base
+
+block content 
+  .container
+    p.col-left.modal-title.margin-top Усі куплені картини (відкрийте, щоб завантажити):
+    if bought.length > 0
+      .gallery-grid
+        each item in bought
+          .picture-mini-card
+            p.desc Тицяй
+            img.img.border-gray(src=`/imgs/pictures/demo/${item.picture.demo}`)
+
+            div.modal
+              div.modal-content
+                span.close &times;
+                .col-left
+                  .row
+                    p.modal-title= item.picture.name
+                  .row-top
+                    img.modal-img(src=`/imgs/pictures/demo/${item.picture.demo}`)
+                    .col-left
+                      p.modal-desc Художник:
+                      p.modal-info= item.artist.name
+                        | 
+                        span.modal-desc= `(${item.artist.email})`
+                      p.modal-desc Категорія:
+                      p.modal-info= item.category.name
+                      p.modal-desc Дата покупки:
+                      p.modal-info= (new Date(item.adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
+
+
+                  .row-space-between
+                    .row-left.txt-green
+                      span.modal-desc Ціна:
+                      span.modal-info #{item.picture.price}$
+                    a.btn.accent(href=`/imgs/pictures/full/${item.picture.image}` download=`${item.picture.name}.jpg`) Завантажити
+    else 
+      .col-center
+        p.modal-txt Ви ще не купили жодну картину 
+        .question-mark.margin-top

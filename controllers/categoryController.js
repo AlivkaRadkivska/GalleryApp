@@ -5,13 +5,9 @@ const factory = require('./handlerFactory');
 
 //*MIDDLEWARE
 exports.checkUsingForDeleting = catchAsync(async (req, res, next) => {
-  const category = await Category.findById(req.params.id).populate(
-    'number_of_pictures'
-  );
+  const category = await Category.findById(req.params.id).populate('number_of_pictures');
   if (category.number_of_pictures > 0)
-    next(
-      new AppError('Ця категорія використовується, її не можна видалити', 400)
-    );
+    next(new AppError('Ця категорія використовується, її не можна видалити', 400));
 
   next();
 });

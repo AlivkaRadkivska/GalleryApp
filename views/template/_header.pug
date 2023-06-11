@@ -19,15 +19,23 @@ header.header.row-space-between
       img.user-avatar(src=`/imgs/users/${user.avatar}`)
       .dropdown-content.col-center
         if user.role != 'admin'
-          p.desc.col-left Картини
-          a(href="/liked") Мої вподобані
-          a(href="/bought") Мої куплені
+          p.desc.col-left Збережене
+          a(href='/liked') Мої вподобані
+          a(href='/bought') Мої куплені
+
         if user.role === 'artist'
-          a(href="/my-pictures") Мої картини
+          p.desc.col-left Художня майстерня
+          a(href='/artist/pictures') Мої картини
+
+        if user.role === 'admin'
+          p.desc.col-left Адміністрація
+          a(href='/admin/messages') Повідомлення
+          a(href='/admin/panel') Панель адміністратора
+          a(href='/admin/db-backup') Завантажити рез. копію БД
 
         p.desc.col-left Профіль
-        a(href="/update-info") Змінити дані
-        a(href="/update-password") Змінити пароль
+        a(href='/update-info') Змінити дані
+        a(href='/update-password') Змінити пароль
         if user.role != 'admin'
           div
             a.txt-red#delete-me-btn Видалити профіль
@@ -40,12 +48,5 @@ header.header.row-space-between
                 .row-space-between
                   p.modal-txt.txt-purple Ви справді цього хочете?
                   p#delete-me-confirm.btn Так
-
-        if user.role === 'admin'
-          p.desc.col-left Адміністрація
-          a(href="/admin/messages") Повідомлення
-          a(href="/admin/categories") Категорії
-          a(href="/admin/tags") Теги
-          a(href="/admin/db-backup") Завантажити рез. копію БД
 
         a.txt-green.col-right.margin-top#logout-btn Вийти

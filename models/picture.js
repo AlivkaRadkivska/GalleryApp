@@ -15,20 +15,16 @@ const pictureSchema = new mongoose.Schema(
       trim: true,
       enum: {
         values: ['квадратний', 'горизонтальний', 'вертикальний'],
-        message:
-          'Оберіть один з варіантів: квадратний, горизонтальний, вертикальний',
+        message: 'Оберіть один з варіантів: квадратний, горизонтальний, вертикальний',
       },
     },
-    demo_img: {
+    demo: {
       type: String,
       required: true,
-      trim: true,
     },
-    full_img: {
+    image: {
       type: String,
       required: true,
-      trim: true,
-      select: false,
     },
     price: {
       type: Number,
@@ -44,8 +40,8 @@ const pictureSchema = new mongoose.Schema(
       type: String,
       default: 'checking',
       enum: {
-        values: ['checking', 'active', 'hidden', 'rejected'],
-        message: 'Оберіть один з варіантів: checking, active, hidden, rejected',
+        values: ['checking', 'active', 'rejected'],
+        message: 'Оберіть один з варіантів: checking, active, rejected',
       },
     },
     artist_id: {

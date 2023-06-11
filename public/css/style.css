@@ -2,11 +2,12 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  align-items: stretch;
   width: 100%;
   background-color: #1a1a1a;
   min-height: 100vh;
   color: #fff;
+  position: relative;
+  margin-top: 70px;
 }
 
 .page {
@@ -71,7 +72,7 @@ ol {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 10px;
   width: 100%;
 }
@@ -82,6 +83,7 @@ ol {
   align-items: flex-end;
   width: 100%;
   gap: 5px;
+  text-align: right;
 }
 
 .col-left {
@@ -90,6 +92,7 @@ ol {
   align-items: flex-start;
   gap: 5px;
   width: 100%;
+  text-align: left;
 }
 
 /* ---------------form---------------- */
@@ -100,6 +103,8 @@ ol {
   background-color: #272727;
   border-radius: 10px;
   position: relative;
+  height: max-content;
+  padding: 5px;
 }
 
 .form-center.main {
@@ -113,6 +118,12 @@ ol {
   font-size: 17px;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
 }
 
 option {
@@ -202,7 +213,7 @@ option {
 }
 
 .file-input-box {
-  width: 100%;
+  width: calc(100% - 18px);
   border: 2px solid #949494;
   border-radius: 10px;
   display: block;
@@ -213,10 +224,12 @@ option {
   max-height: 100px;
   text-align: center;
   color: #aaa;
+  margin: 2px;
 }
 
 .file-input-box input {
   display: none;
+  cursor: text;
 }
 
 .file-input-box label {
@@ -251,6 +264,7 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   border: none;
   -webkit-text-fill-color: #000;
+  background-color: #3ccf7298;
   -webkit-box-shadow: none;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -269,6 +283,10 @@ select:-webkit-autofill:focus {
   max-height: 100px;
 }
 
+.hidden {
+  display: none;
+}
+
 .form-box .label {
   position: absolute;
   background-color: #272727;
@@ -281,16 +299,18 @@ select:-webkit-autofill:focus {
 }
 
 .form-box select,
-.form-box input[type='text'] {
+.form-box input[type='text'],
+.form-box input[type='number'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  cursor: pointer;
+  cursor: text;
   background-color: #272727;
   border: none;
   color: #fff;
   outline: none;
-  width: calc(100% - 40px);
+  max-width: calc(100% - 10px);
+  width: 100%;
   padding: 5px;
   text-align: center;
   font-size: 14px;
@@ -305,12 +325,14 @@ select:-webkit-autofill:focus {
 }
 
 .tags {
-  height: 100%;
-  width: 100%;
-  overflow-y: scroll;
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
+  overflow-y: scroll;
+  gap: 5px;
+  padding: 5px;
+  max-height: calc(100px - 10px);
+  width: calc(100% - 10px);
 }
 
 .checkbox {
@@ -475,7 +497,72 @@ select:-webkit-autofill:focus {
     display: none;
   }
 }
+.table-picture .row-center {
+  gap: 20px;
+}
 
+.table-picture-img {
+  max-width: 150px;
+  max-height: 150px;
+  cursor: zoom-in;
+  transition: 0.1s;
+  z-index: 1;
+}
+
+.table-picture-img.active {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  z-index: 999;
+  max-width: 100%;
+  max-height: 100%;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.table-picture .modal-info {
+  font-size: 14px;
+}
+
+.table-picture .form-box {
+  width: calc(100% - 20px);
+}
+
+.mini-input {
+  background-color: #1a1a1a;
+  border-radius: 5px;
+  color: #fff;
+  padding: 3px;
+  width: max-content;
+  max-width: 20px;
+  height: max-content;
+  text-align: center;
+}
+
+.mini-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.arrow {
+  height: 10px;
+  background-color: #1a1a1a;
+  border-radius: 5px;
+  color: #fff;
+  padding: 5px;
+  width: max-content;
+  max-width: 30px;
+  height: max-content;
+  text-align: center;
+  margin: 0 5px;
+  display: block;
+  font-size: 14px;
+}
+
+.arrow.active:hover {
+  border-color: #3ccf72;
+}
 /* ---------------text---------------- */
 .desc {
   font-size: 13px;
@@ -492,6 +579,7 @@ select:-webkit-autofill:focus {
   position: fixed;
   border-bottom: 2px dashed #1a1a1a;
   z-index: 100;
+  top: 0;
 }
 
 .user {
@@ -687,16 +775,17 @@ select:-webkit-autofill:focus {
 
 /* ---------------main---------------- */
 .container {
-  margin-top: 70px;
+  /* margin-top: 70px; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 80vh;
+  width: calc(100% - 30px);
 }
 
 .container-row {
-  margin-top: 70px;
+  /* margin-top: 70px; */
   display: flex;
   width: 100%;
 }
@@ -705,7 +794,8 @@ select:-webkit-autofill:focus {
   width: 250px;
   padding: 10px;
   background-color: #272727;
-  min-height: 100%;
+  height: 100%;
+  text-align: center;
 }
 
 .gallery-grid {
@@ -714,7 +804,7 @@ select:-webkit-autofill:focus {
   flex-wrap: wrap;
   justify-content: space-around;
   height: 100%;
-  width: 100%;
+  width: calc(100% - 30px);
   padding: 15px;
 }
 
@@ -739,7 +829,6 @@ select:-webkit-autofill:focus {
   z-index: 2;
   border-radius: 10px;
   transition: 0.2s;
-  border: 3px solid #272727;
 }
 
 .picture-mini-card .desc {
@@ -812,7 +901,7 @@ select:-webkit-autofill:focus {
   overflow-y: scroll;
   gap: 5px;
   padding: 5px;
-  max-height: 30vh;
+  max-height: 70px;
   width: calc(100% - 10px);
 }
 
@@ -856,6 +945,7 @@ select:-webkit-autofill:focus {
   border: none;
   margin: 5px;
   text-align: center;
+  cursor: pointer;
 }
 
 .btn.accent {
@@ -914,4 +1004,24 @@ select:-webkit-autofill:focus {
 
 .txt-gray {
   color: #949494;
+}
+
+.border-gray {
+  border: 3px solid #1a1a1a;
+  outline: 2px solid #272727;
+}
+
+.border-purple {
+  border: 3px solid #c23ace;
+  outline: 2px solid #272727;
+}
+
+.border-yellow {
+  border: 3px solid #facc15;
+  outline: 2px solid #272727;
+}
+
+.border-green {
+  border: 3px solid #3ccf72;
+  outline: 2px solid #272727;
 }

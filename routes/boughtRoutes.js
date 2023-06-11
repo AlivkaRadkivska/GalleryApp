@@ -3,21 +3,12 @@ const router = express.Router();
 const boughtController = require('./../controllers/boughtController');
 const authController = require('./../controllers/authController');
 
-router.route('/').get(boughtController.getAllBought); //!ONLY FOR TEST
-
 router.use(authController.protect, authController.restrictTo('user', 'artist'));
 
-router
-  .route('/')
-  .post(
-    boughtController.checkAddingByOwner,
-    boughtController.addUser,
-    boughtController.addBought
-  );
-
-router
-  .route('/:id')
-  .get(boughtController.denyAccess, boughtController.getBought)
-  .delete(boughtController.denyAccess, boughtController.deleteBought);
+router.get(
+  '/checkout-session/:id',
+  boughtController.checkAddingByOwner,
+  boughtController.getCheckoutSession
+);
 
 module.exports = router;

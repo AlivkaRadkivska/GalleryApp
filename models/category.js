@@ -6,7 +6,7 @@ const categorySchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-      unique: true,
+      unique: [true, 'Назва має бути унікальна'],
     },
   },
   {

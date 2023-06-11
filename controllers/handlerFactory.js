@@ -20,7 +20,6 @@ exports.updateOne = (Model, allowedFields = null) =>
     body = req.body;
     if (allowedFields) body = filterObj(req.body, allowedFields);
 
-    console.log(body);
     const item = await Model.findByIdAndUpdate(req.params.id, body, {
       new: true,
       runValidators: true,

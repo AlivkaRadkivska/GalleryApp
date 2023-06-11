@@ -17,8 +17,7 @@ const handleDBValidationError = (err) => {
   return new AppError(message, 400);
 };
 
-const handleJWTError = () =>
-  new AppError('Недійсний токен. Будь ласка, увійдіть ще раз', 401);
+const handleJWTError = () => new AppError('Недійсний токен. Будь ласка, увійдіть ще раз', 401);
 
 const sendErrDev = (err, req, res) => {
   if (req.originalUrl.startsWith('/api'))
@@ -59,14 +58,13 @@ module.exports = (err, req, res, next) => {
   error.name = err.name;
 
   if (process.env.ENV_MODE === 'development') {
-    if (error.name === 'ValidationError')
-      error = handleDBValidationError(error);
+    if (error.name === 'ValidationError') error = handleDBValidationError(error);
+    if (error.code === 11000) error = handleDBDuplicateFields(error);
     sendErrDev(error, req, res);
   } else if (process.env.ENV_MODE === 'production') {
     if (error.name === 'CastError') error = handleDBError(error);
     if (error.code === 11000) error = handleDBDuplicateFields(error);
-    if (error.name === 'ValidationError')
-      error = handleDBValidationError(error);
+    if (error.name === 'ValidationError') error = handleDBValidationError(error);
     if (error.name === 'JsonWebToken' || error.name === 'TokenExpiredError')
       error = handleJWTError();
 

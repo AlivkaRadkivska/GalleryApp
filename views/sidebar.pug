@@ -1,69 +1,70 @@
 block sidebar 
-  .sidebar.col-center
+  .sidebar
 
     form.form-center(method='get')
       p.desc Пошук (незалежно від решти параметрів):
         .form-box
-          label.label(for="name") За назвою
+          label.label(for='name') За назвою
           .row-center
             input(type='text' name='search' placeholder='засніжені гори')
             input.btn.accent(type='submit' name='submit' value='✔') 
 
     .margin-top
-    form.form-center(method="get") 
-      p.desc Фільтрування:
-      .form-box
-        label.label(for="category") Категорія
-        .row-center
-          select(name="category_id")
-            option(value="" selected) усі картини
-            each item in categories
+    form.form-center#main-form(method='get') 
+      fieldset 
+        p.desc Фільтрування:
+        .form-box
+          label.label(for='category') Категорія
+          .row-center
+            select(name='category_id')
+              option(value='' selected) усі картини
+              each item in categories
+                if item.number_of_pictures > 0
+                  option(value=`${item._id}` selected=query.category_id && query.category_id == item._id)= item.name
+            span &#8628
+
+        .form-box
+          label.label(for='format') Формат
+          .row-center
+            select(name='format')
+              option(value='' selected) будь-який
+              option(value='квадратний' selected=query.format && query.format == 'квадратний') квадратний
+              option(value='горизонтальний' selected=query.format && query.format == 'горизонтальний') горизонтальний
+              option(value='вертикальний' selected=query.format && query.format == 'вертикальний') вертикальний
+            span &#8628
+
+        .form-box
+          label.label(for='artist_id') Художник
+          .row-center
+            select(name='artist_id')
+              option(value='' selected) будь-який
+              each item in artists
+                if item.number_of_pictures > 0
+                  option(value=`${item._id}` selected=query.artist_id && query.artist_id == item._id)= item.name
+            span &#8628
+
+        .form-box
+          label.label Теги
+          .tags
+            for item in tags 
               if item.number_of_pictures > 0
-                option(value=`${item._id}` selected=query.category_id && query.category_id == item._id)= item.name
-          span &#8628
+                label.checkbox-label(for=`${item._id}`) 
+                  input.checkbox(type='checkbox' name='tag_ids[all]' id=`${item._id}` value=`${item._id}` checked=query.tag_ids && query.tag_ids.all.includes(item.id))
+                  span= item.name
 
-      .form-box
-        label.label(for="format") Формат
-        .row-center
-          select(name="format")
-            option(value="" selected) будь-який
-            option(value="квадратний" selected=query.format && query.format == "квадратний") квадратний
-            option(value="горизонтальний" selected=query.format && query.format == "горизонтальний") горизонтальний
-            option(value="вертикальний" selected=query.format && query.format == "вертикальний") вертикальний
-          span &#8628
+        .margin-top
+        p.desc Впорядкування:
+        .form-box
+          label.label(for='sort') За
+          .row-center
+            select(name='sort')
+              option(value='-adding_date' selected) датою додавання &#8600
+              option(value='adding_date' selected=query.sort && query.sort == 'adding_date') датою додавання &#8599
+              option(value='-price' selected=query.sort && query.sort == '-price') ціною &#8600
+              option(value='price' selected=query.sort && query.sort == 'price') ціною &#8599
+              option(value='-name' selected=query.sort && query.sort == '-name') назвою &#8600
+              option(value='name' selected=query.sort && query.sort == 'name') назвою &#8599
+            span &#8628
 
-      .form-box
-        label.label(for="artist_id") Художник
-        .row-center
-          select(name="artist_id")
-            option(value="" selected) будь-який
-            each item in artists
-              if item.number_of_pictures > 0
-                option(value=`${item._id}` selected=query.artist_id && query.artist_id == item._id)= item.name
-          span &#8628
-
-      .form-box
-        label.label Тег
-        .tags
-          for item in tags 
-            if item.number_of_pictures > 0
-              label.checkbox-label(for=`${item._id}`) 
-                input.checkbox(type='checkbox' name='tag_ids[all]' id=`${item._id}` value=`${item._id}` checked=query.tag_ids && query.tag_ids.all.includes(item.id))
-                span= item.name
-
-      .margin-top
-      p.desc Впорядкування:
-      .form-box
-        label.label(for="sort") За
-        .row-center
-          select(name="sort")
-            option(value="adding_date" selected) датою додавання &#8599
-            option(value="-adding_date" selected=query.sort && query.sort == "-adding_date") датою додавання &#8600
-            option(value="price" selected=query.sort && query.sort == "price") ціною &#8599
-            option(value="-price" selected=query.sort && query.sort == "-price") ціною &#8600
-            option(value="name" selected=query.sort && query.sort == "name") назвою &#8599
-            option(value="-name" selected=query.sort && query.sort == "-name") назвою &#8600
-          span &#8628
-
-      .margin-top
-      input.btn.accent(type='submit' value='Застосувати') 
+        .margin-top
+        input.btn.accent(type='submit' value='Застосувати') 

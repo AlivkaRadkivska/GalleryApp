@@ -1,0 +1,79 @@
+extends ../template/base
+
+block content
+  .container
+    form.form-center.main(id=picture ? 'update-picture' : 'add-picture')
+      if picture
+        input.hidden(type='text' name='id' value=`${picture.id}`)
+
+      .main-title= title
+      .form-box
+        label.label(for='name') Назва
+        .row-center
+        if picture
+          input(type='text' name='name' value=`${picture.name}` required)
+        else 
+          input(type='text' name='name' required)
+
+      .form-box
+        label.label(for='format') Формат
+        .row-center
+          select(name='format')
+            if picture
+              option(value='квадратний' selected=picture.format == 'квадратний') квадратний
+              option(value='горизонтальний' selected=picture.format == 'горизонтальний') горизонтальний
+              option(value='вертикальний' selected=picture.format == 'вертикальний') вертикальний
+            else 
+              option(value='квадратний') квадратний
+              option(value='горизонтальний') горизонтальний
+              option(value='вертикальний') вертикальний
+          span &#8628
+
+      .form-box
+        label.label(for='category') Категорія
+        .row-center
+          select(name='category_id')
+            each item in categories
+              if picture
+                option(value=`${item._id}` selected=picture.category_id == item._id)= item.name
+              else 
+                option(value=`${item._id}`)= item.name
+          span &#8628
+
+      .form-box
+        label.label Теги
+        .tags
+          for item in tags 
+            label.checkbox-label(for=`${item._id}`) 
+              if picture
+                input.checkbox(type='checkbox' name='tag_ids' value=`${item._id}` checked=picture.tag_ids.includes(item.id))
+              else 
+                input.checkbox(type='checkbox' name='tag_ids' value=`${item._id}`)
+              span= item.name
+
+      .form-box
+        label.label(for='name') Ціна ($)
+        .row-center
+        if picture
+          input(type='number' name='price' value=`${picture.price}` required)
+        else 
+          input(type='number' name='price' required)
+
+      if !picture
+        .col-left.margin-top
+          span.form-label Картина
+          .file-input-box
+            label() 
+              span ~ обрати ~
+              input#image.file-input(type='file' name='image' accept='image/*')
+
+      p.desc.txt-red#msg
+
+      .margin-top
+      if picture
+        input.btn.accent(type='submit' value='Редагувати')
+      else
+        input.btn.accent(type='submit' value='Додати')
+
+block append scripts 
+  script(src='/js/file-input-styling.js')

@@ -1,19 +1,19 @@
-extends base
+extends ../template/base
 
 block content
   .container
     form.form-center.main#update-pass-form
       .main-title= title
       .inputbox
-        input#curr_password(required type="password" name="curr_password")
+        input#curr_password(required type='password' name='curr_password')
         span Поточний пароль*
         i
       .inputbox
-        input#password(required type="password" name="password")
+        input#password(required type='password' name='password')
         span Новий пароль*
         i
       .inputbox
-        input#password_confirm(required type="password" name="password_confirm")
+        input#password_confirm(required type='password' name='password_confirm')
         span Підтвердити новий пароль*
         i
 

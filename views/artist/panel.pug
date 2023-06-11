@@ -1,0 +1,49 @@
+extends ../template/base
+
+block content 
+  .container
+    .margin-top
+    a.btn.accent(href='/artist/add-picture') Додати картину
+    p.col-left.modal-title.margin-top Мої картини:
+    if pictures.length > 0
+      .gallery-grid 
+        each item in pictures
+          form.form-center.border-gray.edit-picture.table-picture
+            input.hidden(type='text' name='id' value=`${item.id}`)
+            .col-center
+              if item.status === 'active'
+                p.desc.txt-yellow Статус: опублікована.
+              if item.status === 'rejected'
+                p.desc.txt-red Статус: відхилена.
+                p.modal-desc Повідомлення від адміна:
+                p.modal-info.txt-red= item.message
+              if item.status === 'checking'
+                p.desc.txt-purple Статус: перевіряється.
+            .row-center 
+              .col-left
+                p.modal-desc Демо версія:
+                img.table-picture-img(src=`/imgs/pictures/demo/${item.demo}`)
+                p.modal-desc Повна версія:
+                img.table-picture-img(src=`/imgs/pictures/full/${item.image}`)
+              .col-left
+                p.modal-desc Назва:
+                p.modal-info= item.name
+                p.modal-desc Категорія:
+                p.modal-info= item.category.name
+                p.modal-desc Формат:
+                p.modal-info= item.format
+                p.modal-desc Ціна:
+                p.modal-info= `${item.price}$`
+                p.modal-desc Дата додавання:
+                p.modal-info= (new Date(item.adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
+                if item.tags.length > 0
+                  p.modal-desc Теги:
+                  .modal-tags
+                    for tag in item.tags
+                      p.modal-info= tag.name
+            .row-space-between
+              p.btn.delete-picture.txt-red(data-id=`${item.id}`) Видалити
+              a.btn.accent(href=`/artist/update-picture/${item.id}`) Редагувати 
+
+    else 
+      p.desc.row-center Картин немає

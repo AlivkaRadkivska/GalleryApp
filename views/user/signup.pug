@@ -1,23 +1,23 @@
-extends base
+extends ../template/base
 
 block content
   .container
     form.form-center.main#signup-form
       .main-title= title
       .inputbox
-        input#name(required type="text" name="name")
+        input#name(required type='text' name='name')
         span Ім'я користувача*
         i
       .inputbox
-        input#email(required type="email" name="email")
+        input#email(required type='email' name='email')
         span E-mail*
         i
       .inputbox
-        input#password(required type="password" name="password")
+        input#password(required type='password' name='password')
         span Пароль*
         i
       .inputbox
-        input#password_confirm(required type="password" name="password_confirm")
+        input#password_confirm(required type='password' name='password_confirm')
         span Підтвердити пароль*
         i
       .col-left.margin-top
@@ -34,7 +34,7 @@ block content
         .file-input-box
           label() 
             span ~ обрати ~
-            input#avatar.file-input(type="file" name="avatar")
+            input#avatar.file-input(type='file' name='avatar')
 
       .col-left.margin-top
         p.desc *Обов'язкове поле

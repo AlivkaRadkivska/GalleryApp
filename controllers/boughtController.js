@@ -1,3 +1,5 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const Bought = require('./../models/bought');
 const Picture = require('./../models/picture');
 const factory = require('./handlerFactory');
@@ -6,7 +8,7 @@ const AppError = require('./../utils/appError');
 
 //*MIDDLEWARE
 exports.checkAddingByOwner = catchAsync(async (req, res, next) => {
-  const picture = await Picture.findById(req.body.picture);
+  const picture = await Picture.findById(req.params.id);
   if (picture === null) next(new AppError('Не знайдено', 404));
 
   if (picture.artist_id === req.user.id)
@@ -31,8 +33,47 @@ exports.addUser = (req, res, next) => {
 };
 //*
 
-exports.addBought = factory.createOne(Bought);
-exports.getBought = factory.getOne(Bought);
-exports.deleteBought = factory.deleteOne(Bought);
+// exports.addBought = factory.createOne(Bought);
+// exports.getBought = factory.getOne(Bought);
 
-exports.getAllBought = factory.getMany(Bought); //!ONLY FOR TEST
+exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+  const picture = await Picture.findById(req.params.id);
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    success_url: `${req.protocol}://${req.get('host')}/bought?user_id=${req.user.id}&picture=${
+      req.params.id
+    }`,
+    cancel_url: `${req.protocol}://${req.get('host')}/`,
+    customer_email: req.user.email,
+    client_reference_id: req.params.id,
+    mode: 'payment',
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: Math.round(picture.price * 100),
+          product_data: {
+            name: picture.name,
+          },
+        },
+      },
+    ],
+  });
+
+  res.status(200).json({
+    status: 'success',
+    session,
+  });
+});
+
+exports.addBought = catchAsync(async (req, res, next) => {
+  const { user_id, picture } = req.query;
+  console.log(picture);
+  console.log(req.originalUrl);
+  if (!user_id || !picture) return next();
+
+  await Bought.create({ user_id, picture });
+  res.redirect(req.originalUrl.split('?')[0]);
+});

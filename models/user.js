@@ -86,7 +86,7 @@ userSchema.pre('save', async function (next) {
 
 userSchema.pre(/^findOne/, function (next) {
   this.populate('bought').populate('liked');
-  if (this.role === 'artist') this.populate('pictures');
+  if (this.role == 'artist') this.populate('pictures');
 
   next();
 });

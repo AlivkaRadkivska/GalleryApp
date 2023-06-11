@@ -29,7 +29,7 @@ export const logout = async () => {
       url: 'http://localhost:3000/api/users/logout',
     });
 
-    if (res.data.status === 'success') location.reload(true);
+    if (res.data.status === 'success') location.assign('/');
   } catch (err) {
     console.log(err.response.data);
     alert('Щось пішло не так, спробуйте ще раз');

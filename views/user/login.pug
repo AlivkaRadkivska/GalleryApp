@@ -1,15 +1,15 @@
-extends base
+extends ../template/base
 
 block content
   .container
     form.form-center.main#login-form
       .main-title= title
       .inputbox
-        input#email(required="required" type="email" name="email")
+        input#email(required='required' type='email' name='email')
         span E-mail
         i
       .inputbox
-        input#password(required="required" type="password" name="password")
+        input#password(required='required' type='password' name='password')
         span Пароль
         i
 

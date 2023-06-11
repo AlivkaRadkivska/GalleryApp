@@ -20,3 +20,23 @@ if (deleteBtn)
   deleteBtn.onclick = function () {
     this.parentElement.lastChild.classList = 'modal active';
   };
+
+const pictures = document.querySelectorAll('.table-picture-img');
+
+if (pictures) {
+  const clearActive = () => {
+    for (const picture of pictures) {
+      picture.classList = 'table-picture-img';
+    }
+  };
+
+  for (const picture of pictures) {
+    picture.onclick = function () {
+      if (this.classList.contains('active')) this.classList = 'table-picture-img';
+      else {
+        clearActive();
+        this.classList = 'table-picture-img active';
+      }
+    };
+  }
+}

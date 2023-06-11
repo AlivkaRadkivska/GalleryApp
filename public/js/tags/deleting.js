@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-export const deleteMe = async () => {
+export const tagDeleting = async (id) => {
   try {
     const res = await axios({
       method: 'DELETE',
-      url: 'http://localhost:3000/api/users/me',
+      url: `http://localhost:3000/api/tags/${id}`,
     });
 
-    console.log(res.data);
     window.setTimeout(() => {
-      location.assign('/');
+      location.reload(true);
     }, 100);
   } catch (err) {
     console.log(err.response.data);
+    document.getElementById('tag-msg').innerHTML = err.response.data.message;
   }
 };
