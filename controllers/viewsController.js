@@ -37,9 +37,10 @@ exports.getMainPage = catchAsync(async (req, res, next) => {
     pictures = await features.query;
     query = features.queryObj;
     if (!features.queryObj.max_pages)
-      query.max_pages = Math.ceil((await Picture.find(features.queryParams).countDocuments()) / 9);
+      query.max_pages = Math.ceil(
+        (await Picture.find({ status: 'active', ...features.queryParams }).countDocuments()) / 9
+      );
   }
-  console.log(query);
 
   if (req.query)
     res.status(200).render('main', {
@@ -80,6 +81,9 @@ exports.getAdminTables = catchAsync(async (req, res, next) => {
   const categories = await Category.find().populate('number_of_pictures');
   const tags = await Tag.find().populate('number_of_pictures');
   const pictures_to_confirm = await Picture.find({ status: 'checking' });
+  const user_count = await User.countDocuments();
+  const picture_count = await Picture.find({ status: 'active' }).countDocuments();
+  const hidden_count = await Picture.find({ status: 'hidden' }).countDocuments();
 
   if (req.query)
     res.status(200).render('admin/panel', {
@@ -87,6 +91,9 @@ exports.getAdminTables = catchAsync(async (req, res, next) => {
       categories,
       tags,
       pictures_to_confirm,
+      user_count,
+      picture_count,
+      hidden_count,
     });
 });
 
@@ -159,4 +166,75 @@ exports.getBoughtPage = catchAsync(async (req, res, next) => {
       title: 'Куплені картини',
       bought,
     });
+});
+
+exports.getStatisticPage = catchAsync(async (req, res, next) => {
+  const prices = await Picture.aggregate([
+    { $match: { status: 'active' } },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 },
+        avg: { $avg: '$price' },
+        min: { $min: '$price' },
+        max: { $max: '$price' },
+      },
+    },
+  ]);
+
+  const categories = await Picture.aggregate([
+    { $match: { status: 'active' } },
+    { $group: { _id: '$category_id', count: { $sum: 1 } } },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+    { $project: { category: { $arrayElemAt: ['$category', 0] }, count: 1 } },
+    { $sort: { count: -1 } },
+  ]);
+
+  const tags = await Picture.aggregate([
+    { $match: { status: 'active' } },
+    { $unwind: '$tag_ids' },
+    {
+      $lookup: {
+        from: 'tags',
+        localField: 'tag_ids',
+        foreignField: '_id',
+        as: 'tag',
+      },
+    },
+    { $group: { _id: '$tag.name', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+  ]);
+
+  const popularPictures = await Bought.aggregate([
+    { $lookup: { from: 'pictures', localField: 'picture_id', foreignField: '_id', as: 'picture' } },
+    { $unwind: '$picture' },
+    { $match: { 'picture.status': 'active' } },
+    { $group: { _id: '$picture_id', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $limit: 3 },
+    { $lookup: { from: 'pictures', localField: '_id', foreignField: '_id', as: 'picture' } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'picture.artist_id',
+        foreignField: '_id',
+        as: 'artist',
+      },
+    },
+  ]);
+
+  res.status(200).render('statistic', {
+    title: 'Статистика',
+    prices: prices[0],
+    categories,
+    tags,
+    popular_pictures: popularPictures,
+  });
 });

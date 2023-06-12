@@ -18,13 +18,23 @@ block content
                     p.modal-title= item.picture.name
                   .row-top
                     img.modal-img(src=`/imgs/pictures/demo/${item.picture.demo}`)
-                    .col-left
+                    .col-left.col-left
                       p.modal-desc Художник:
-                      p.modal-info= item.artist.name
-                        | 
-                        span.modal-desc= `(${item.artist.email})`
+                      if item.picture.artist
+                        p.modal-info= item.picture.artist.name
+                        span.modal-desc (#{item.picture.artist.email})
+                      else
+                        p.modal-info= item.artist.name
+                        span.modal-desc (#{item.artist.email})
                       p.modal-desc Категорія:
-                      p.modal-info= item.category.name
+                      p.modal-info= item.picture.category.name
+                      p.modal-desc Дата додавання:
+                      p.modal-info= (new Date(item.picture.adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
+                      if item.picture.tags.length > 0
+                        p.modal-desc Теги:
+                        .modal-tags
+                          for tag in item.picture.tags
+                            p.modal-info= tag.name
                       p.modal-desc Дата покупки:
                       p.modal-info= (new Date(item.adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
 
@@ -32,7 +42,11 @@ block content
                   .row-space-between
                     .row-left.txt-green
                       span.modal-desc Ціна:
+                      span.modal-info #{item.spent}$
+                      | 
+                      span.modal-desc (поточна: 
                       span.modal-info #{item.picture.price}$
+                      span.modal-desc )
                     a.btn.accent(href=`/imgs/pictures/full/${item.picture.image}` download=`${item.picture.name}.jpg`) Завантажити
     else 
       .col-center

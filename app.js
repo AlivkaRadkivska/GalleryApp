@@ -35,7 +35,6 @@ const pictureRouter = require('./routes/pictureRoutes');
 const userRouter = require('./routes/userRoutes');
 const categoryRouter = require('./routes/categoryRoutes');
 const tagRouter = require('./routes/tagRoutes');
-const likedRouter = require('./routes/likedRoutes');
 const boughtRouter = require('./routes/boughtRoutes');
 const viewsRouter = require('./routes/viewsRoutes');
 
@@ -44,7 +43,6 @@ app.use('/api/pictures', pictureRouter);
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/tags', tagRouter);
-app.use('/api/liked', likedRouter);
 app.use('/api/bought', boughtRouter);
 app.use('/', viewsRouter);
 //?

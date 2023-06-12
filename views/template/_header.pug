@@ -20,7 +20,6 @@ header.header.row-space-between
       .dropdown-content.col-center
         if user.role != 'admin'
           p.desc.col-left Збережене
-          a(href='/liked') Мої вподобані
           a(href='/bought') Мої куплені
 
         if user.role === 'artist'
@@ -29,7 +28,6 @@ header.header.row-space-between
 
         if user.role === 'admin'
           p.desc.col-left Адміністрація
-          a(href='/admin/messages') Повідомлення
           a(href='/admin/panel') Панель адміністратора
           a(href='/admin/db-backup') Завантажити рез. копію БД
 
@@ -44,7 +42,7 @@ header.header.row-space-between
                 span.close &times;
                 p.modal-txt Якщо ви видалите профіль, очиститься історія всіх куплених та вподобаних вами картин. 
                   if user.role === 'artist' 
-                    span.txt-red Усі ваші картини, завантажені на сайт, також видаляться.
+                    span.txt-red Усі ваші картини, завантажені на сайт, стануть неактивними і будуть доступні лише тим, хто їх купив.
                 .row-space-between
                   p.modal-txt.txt-purple Ви справді цього хочете?
                   p#delete-me-confirm.btn Так

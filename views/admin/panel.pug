@@ -2,6 +2,7 @@ extends ../template/base
 
 block content 
   .container
+    p.col-left.main-title.txt-gray.margin-top Кількість картин на сайті: [ активних: #{picture_count}; прихованих: #{hidden_count}], кількість користувачів: #{user_count}
     p.col-left.modal-title.margin-top Нові картини
     if pictures_to_confirm.length > 0
       .gallery-grid 

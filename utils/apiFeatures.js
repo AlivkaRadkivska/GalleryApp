@@ -49,7 +49,7 @@ class APIFeatures {
     let page = this.queryStr.page || 1;
     if (this.queryStr.next_page && page < this.queryStr.max_pages) page++;
     if (this.queryStr.prev_page && page > 1) page--;
-    console.log(page);
+
     const limit = 9;
     const skip = (page - 1) * limit;
 

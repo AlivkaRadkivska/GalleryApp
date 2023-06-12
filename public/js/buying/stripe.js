@@ -6,7 +6,6 @@ const stripe = Stripe(
 export const buyPicture = async (id) => {
   try {
     const session = await axios(`http://localhost:3000/api/bought/checkout-session/${id}`);
-    console.log(session);
 
     await stripe.redirectToCheckout({
       sessionId: session.data.session.id,

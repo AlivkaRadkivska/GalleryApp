@@ -7,6 +7,7 @@ const boughtController = require('./../controllers/boughtController');
 router.use(authController.checkLoggedUser);
 
 router.get('/', viewsController.regexSearch, viewsController.getMainPage);
+router.get('/statistic', viewsController.getStatisticPage);
 
 //USERS
 router.get('/login', authController.restrictToLogged, viewsController.getLoginPage);
@@ -20,7 +21,6 @@ router.get(
   boughtController.addBought,
   viewsController.getBoughtPage
 );
-// router.get('/bought', authController.protect, viewsController.getUpdatePassPage);
 
 //ARTISTS
 router.get(
@@ -56,11 +56,5 @@ router.get(
   authController.restrictTo('admin'),
   viewsController.getBackup
 );
-// router.get(
-//   '/admin/messages',
-//   authController.protect,
-//   authController.restrictTo('admin')
-//   viewsController.getAdminsMessages
-// );
 
 module.exports = router;

@@ -7,7 +7,7 @@ const handleDBError = (err) => {
 
 const handleDBDuplicateFields = (err) => {
   const val = Object.keys(err.keyValue);
-  const message = `Повтор поля(полів): ${val}. Будь ласка, введіть інше значення`;
+  const message = `Повтор поля(полів): ${val}. Будь ласка, введіть інші значення`;
   return new AppError(message, 400);
 };
 

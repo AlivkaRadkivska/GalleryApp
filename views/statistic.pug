@@ -1,0 +1,87 @@
+extends template/base
+
+block content
+  .container
+
+    p.col-left.main-title.txt-gray.margin-top Наші три найпопулярніші картини:
+    .gallery-grid
+      -let i = 0;
+      each item in popular_pictures
+        -i += 1;
+        p.txt-yellow 
+        .picture-mini-card.margin-top
+          if i === 1
+            p.text.txt-yellow куплено #{item.count} раз(ів)
+            img.img.border-yellow(src=`/imgs/pictures/demo/${item.picture[0].demo}`)
+          if i === 2
+            p.text.txt-green куплено #{item.count} раз(ів)
+            img.img.border-green(src=`/imgs/pictures/demo/${item.picture[0].demo}`)
+          if i === 3
+            p.text.txt-purple куплено #{item.count} раз(ів)
+            img.img.border-purple(src=`/imgs/pictures/demo/${item.picture[0].demo}`)
+          p.desc Тицяй
+
+          div.modal
+            div.modal-content
+              span.close &times;
+              .col-left
+                p.modal-title= item.picture[0].name
+              .row-top
+                img.modal-img(src=`/imgs/pictures/demo/${item.picture[0].demo}`)
+                .col-left
+                  p.modal-desc Художник:
+                  p.modal-info= item.artist[0].name
+                    | 
+                    span.modal-desc= `(${item.artist[0].email})`
+                  p.modal-desc Дата додавання:
+                  p.modal-info= (new Date(item.picture[0].adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
+
+              .row-space-between
+                .row-left.txt-green
+                  span.modal-desc Ціна:
+                  span.modal-info #{item.picture[0].price}$
+                if user
+                  if item.artist[0].id === user.id
+                    p.btn.disabled Ви не можете купити власну картину
+                  else if user.role === 'admin'
+                    p.btn.disabled Ви не можете купувати картини
+                  else if user.bought.some(e=>e.picture_id.toString() == item.id)
+                    a.btn.accent(href=`/imgs/pictures/full/${item.picture[0].image}` download=`${item.picture[0].name}.jpg`) Завантажити
+                  else 
+                    p.btn.accent.buy-picture(data-id=item.picture[0].id) Придбати
+                else 
+                  p.btn.disabled Авторизуйтесь, щоб купити
+
+    p.col-left.main-title.txt-gray.margin-top Цифрова статистика:
+    .row-space-between
+      .statistic-box
+        p.col-center.main-title.txt-yellow Ціни наших картин:
+        .content
+          .col-center
+            .row
+              p.desc Найвища: 
+              p.txt-yellow #{Math.round(prices.max)}$
+            .row
+              p.desc Середня: 
+              p.txt-purple #{Math.round(prices.avg)}$
+            .row
+              p.desc Найнижча: 
+              p.txt-green #{Math.round(prices.min)}$
+
+      .statistic-box
+        p.col-center.main-title.txt-yellow Кількість картин кожної категорії:
+        .content
+          .col-center
+            each item in categories
+              .row
+                p.desc #{item.category.name}:
+                p.txt-purple= item.count
+
+      .statistic-box
+        p.col-center.main-title.txt-yellow Кількість картин, з тегом:
+        .content
+          .col-center
+            each item in tags
+              .row
+                p.desc #{item._id[0]}:
+                p.txt-purple= item.count

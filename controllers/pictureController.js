@@ -6,8 +6,6 @@ const { promisify } = require('util');
 const unlinkAsync = promisify(fs.unlink);
 
 const Picture = require('./../models/picture');
-const Liked = require('./../models/liked');
-const Bought = require('./../models/bought');
 const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
@@ -40,11 +38,6 @@ exports.addArtist = (req, res, next) => {
   next();
 };
 
-exports.deletePictureConnects = catchAsync(async (req, res, next) => {
-  await Liked.deleteMany({ picture_id: req.user.id });
-  next();
-});
-
 exports.addImage = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
@@ -67,9 +60,8 @@ exports.addImage = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteImage = catchAsync(async (req, res, next) => {
-  const picture = await Picture.findById(req.params.id);
-  const bought = await Bought.findOne({ picture: { image: picture.image } });
-  if (!bought)
+  const picture = await Picture.findById(req.params.id).populate('buying_count');
+  if (picture.buying_count == 0)
     try {
       await unlinkAsync(`public/imgs/pictures/demo/${picture.demo}`);
       await unlinkAsync(`public/imgs/pictures/full/${picture.image}`);
@@ -92,29 +84,19 @@ exports.updatePicture = factory.updateOne(Picture, [
   'format',
 ]);
 exports.updatePictureStatus = factory.updateOne(Picture, ['status', 'message']);
-exports.deletePicture = factory.deleteOne(Picture);
+exports.deletePicture = catchAsync(async (req, res, next) => {
+  const item = await Picture.findById(req.params.id).populate('buying_count');
+
+  if (!item) next(new AppError('Не знайдено', 404));
+
+  if (item.buying_count > 0)
+    await Picture.findByIdAndUpdate(req.params.id, { status: 'hidden' }, { new: true });
+  else await Picture.findByIdAndDelete(req.params.id);
+
+  res.status(204).json({
+    status: 'success',
+  });
+});
 
 exports.getAllPictures = factory.getMany(Picture);
 exports.getPicture = factory.getOne(Picture);
-
-//!CHANGE
-exports.getPicturesStats = catchAsync(async (req, res, next) => {
-  const stats = await Picture.aggregate([
-    {
-      $group: {
-        _id: null,
-        avgPrice: { $avg: '$price' },
-        minPrice: { $min: '$price' },
-        maxPrice: { $max: '$price' },
-      },
-    },
-  ]);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      stats,
-    },
-  });
-});
-//!

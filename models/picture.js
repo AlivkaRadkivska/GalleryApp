@@ -7,7 +7,6 @@ const pictureSchema = new mongoose.Schema(
       required: true,
       trim: true,
       maxLength: 40,
-      minLength: 5,
     },
     format: {
       type: String,
@@ -40,8 +39,8 @@ const pictureSchema = new mongoose.Schema(
       type: String,
       default: 'checking',
       enum: {
-        values: ['checking', 'active', 'rejected'],
-        message: 'Оберіть один з варіантів: checking, active, rejected',
+        values: ['checking', 'active', 'rejected', 'hidden'],
+        message: 'Оберіть один з варіантів: checking, active, rejected, hidden',
       },
     },
     artist_id: {
@@ -93,14 +92,15 @@ pictureSchema.virtual('tags', {
   foreignField: '_id',
 });
 
+pictureSchema.virtual('buying_count', {
+  ref: 'Bought',
+  localField: '_id',
+  foreignField: 'picture_id',
+  count: true,
+});
+
 pictureSchema.pre(/^find/, function (next) {
-  this.find()
-    .populate({ path: 'category', select: '-__v' })
-    .populate({
-      path: 'artist',
-      select: '-__v -role -avatar',
-    })
-    .populate({ path: 'tags', select: '-__v' });
+  this.find().populate('category').populate('artist').populate('tags');
   next();
 });
 

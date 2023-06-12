@@ -2,7 +2,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const Bought = require('./../models/bought');
 const Picture = require('./../models/picture');
-const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
@@ -33,15 +32,12 @@ exports.addUser = (req, res, next) => {
 };
 //*
 
-// exports.addBought = factory.createOne(Bought);
-// exports.getBought = factory.getOne(Bought);
-
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const picture = await Picture.findById(req.params.id);
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    success_url: `${req.protocol}://${req.get('host')}/bought?user_id=${req.user.id}&picture=${
+    success_url: `${req.protocol}://${req.get('host')}/bought?user_id=${req.user.id}&picture_id=${
       req.params.id
     }`,
     cancel_url: `${req.protocol}://${req.get('host')}/`,
@@ -69,11 +65,10 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 exports.addBought = catchAsync(async (req, res, next) => {
-  const { user_id, picture } = req.query;
-  console.log(picture);
-  console.log(req.originalUrl);
-  if (!user_id || !picture) return next();
+  const { user_id, picture_id } = req.query;
+  if (!user_id || !picture_id) return next();
+  const picture = await Picture.findById(picture_id);
 
-  await Bought.create({ user_id, picture });
+  await Bought.create({ user_id, picture_id, spent: picture.price });
   res.redirect(req.originalUrl.split('?')[0]);
 });

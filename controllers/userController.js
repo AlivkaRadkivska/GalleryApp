@@ -6,7 +6,6 @@ const { promisify } = require('util');
 const unlinkAsync = promisify(fs.unlink);
 
 const User = require('./../models/user');
-const Liked = require('./../models/liked');
 const Bought = require('./../models/bought');
 const Picture = require('./../models/picture');
 const factory = require('./handlerFactory');
@@ -62,18 +61,10 @@ exports.deleteAvatar = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUserConnects = catchAsync(async (req, res, next) => {
-  await Liked.deleteMany({ user_id: req.user.id });
   await Bought.deleteMany({ user_id: req.user.id });
-  console.log(req.user);
 
-  if (req.user.role === 'artist') {
-    const pictures = await Picture.find({ artist_id: req.user.id });
-    for (let i = 0; i < pictures.length; i++) {
-      await unlinkAsync(`public/imgs/pictures/demo/${pictures[i].demo}`);
-      await unlinkAsync(`public/imgs/pictures/full/${pictures[i].image}`);
-    }
-    await Picture.deleteMany({ artist_id: req.user.id });
-  }
+  if (req.user.role === 'artist')
+    await Picture.updateMany({ artist_id: req.user.id }, { status: 'hidden' }, { new: true });
 
   next();
 });

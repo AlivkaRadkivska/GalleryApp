@@ -63,13 +63,6 @@ userSchema.virtual('number_of_pictures', {
   foreignField: 'artist_id',
   count: true,
 });
-
-userSchema.virtual('liked', {
-  ref: 'Liked',
-  localField: '_id',
-  foreignField: 'user_id',
-});
-
 userSchema.virtual('bought', {
   ref: 'Bought',
   localField: '_id',
@@ -85,7 +78,7 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.pre(/^findOne/, function (next) {
-  this.populate('bought').populate('liked');
+  this.populate('bought');
   if (this.role == 'artist') this.populate('pictures');
 
   next();

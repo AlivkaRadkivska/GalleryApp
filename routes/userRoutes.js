@@ -3,8 +3,6 @@ const router = express.Router();
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
 
-router.route('/').get(userController.getAllUsers); //!ONLY FOR TEST
-
 router.post(
   '/signup',
   userController.uploadAvatar,

@@ -3,7 +3,6 @@ const router = express.Router({ mergeParams: true });
 const pictureController = require('./../controllers/pictureController');
 const authController = require('./../controllers/authController');
 
-router.route('/statistic').get(pictureController.getPicturesStats);
 router.get('/', pictureController.getAllPictures);
 router.get('/:id', pictureController.getPicture);
 
@@ -27,7 +26,6 @@ router
   .delete(
     authController.restrictTo('artist'),
     pictureController.checkArtist,
-    pictureController.deletePictureConnects,
     pictureController.deleteImage,
     pictureController.deletePicture
   );
