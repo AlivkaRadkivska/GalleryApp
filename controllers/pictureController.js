@@ -9,6 +9,7 @@ const Picture = require('./../models/picture');
 const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const filterObj = require('./../utils/filterObject');
 
 const multerStorage = multer.memoryStorage();
 
@@ -82,6 +83,7 @@ exports.updatePicture = factory.updateOne(Picture, [
   'tag_ids',
   'price',
   'format',
+  'status',
 ]);
 exports.updatePictureStatus = factory.updateOne(Picture, ['status', 'message']);
 exports.deletePicture = catchAsync(async (req, res, next) => {

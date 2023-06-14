@@ -3,12 +3,11 @@ extends ../template/base
 block content 
   .container
     p.col-left.main-title.txt-gray.margin-top Кількість картин на сайті: [ активних: #{picture_count}; прихованих: #{hidden_count}], кількість користувачів: #{user_count}
-    p.col-left.modal-title.margin-top Нові картини
+    p.col-left.modal-title.margin-top Картини на перевірку
     if pictures_to_confirm.length > 0
       .gallery-grid 
         each item in pictures_to_confirm
           form.form-center.border-gray.reject-picture.table-picture
-            p.desc.col-left Нова картина:
             input.hidden(type='text' name='id' value=`${item.id}`)
             .row-center 
               .col-right
@@ -44,7 +43,7 @@ block content
               p.btn.accent.confirm-picture(data-id=`${item.id}`) Погодити 
 
     else 
-      p.desc.row-center Нових картин немає
+      p.desc.row-center Картин немає
 
     p.col-left.modal-title.margin-top Категорії
     p.desc.txt-red#category-msg

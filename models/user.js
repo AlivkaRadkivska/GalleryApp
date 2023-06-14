@@ -29,7 +29,6 @@ const userSchema = new mongoose.Schema(
         message: 'пароль має бути однаковим',
       },
     },
-    password_changed_at: Date,
     name: {
       type: String,
       trim: true,

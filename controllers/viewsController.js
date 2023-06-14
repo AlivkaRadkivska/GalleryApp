@@ -28,6 +28,7 @@ exports.getMainPage = catchAsync(async (req, res, next) => {
   if (req.query.name) {
     pictures = await Picture.find({ name: req.query.name, status: 'active' });
     query.max_pages = Math.ceil(pictures.length / 9);
+    query.name = req.query.name.$regex;
   } else {
     const features = new APIFeatures(Picture.find({ status: 'active' }), req.query)
       .filter()
@@ -125,12 +126,16 @@ exports.getBackup = catchAsync(async (req, res, next) => {
 });
 
 exports.getArtistPictures = catchAsync(async (req, res, next) => {
-  const pictures = await Picture.find({ artist_id: req.user.id }).sort('-status');
+  const pictures = await Picture.find({ artist_id: req.user.id, status: { $ne: 'hidden' } }).sort(
+    '-status'
+  );
+  const bought = await Bought.find({ 'artist._id': req.user._id }).populate('user');
 
   if (req.query)
     res.status(200).render('artist/panel', {
       title: 'Художня майстерня',
       pictures,
+      bought,
     });
 });
 

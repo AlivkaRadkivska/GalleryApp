@@ -76,12 +76,3 @@ exports.deleteOne = (Model) =>
         status: 'success',
       });
   });
-
-exports.deleteMany = (Model, params = {}) =>
-  catchAsync(async (req, res, next) => {
-    await Model.deleteMany(params);
-
-    res.status(204).json({
-      status: 'success',
-    });
-  });

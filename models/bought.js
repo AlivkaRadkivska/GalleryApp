@@ -39,6 +39,13 @@ boughtSchema.virtual('picture', {
   justOne: true,
 });
 
+boughtSchema.virtual('user', {
+  ref: 'User',
+  localField: 'user_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
 boughtSchema.index({ user_id: 1, picture_id: 1 }, { unique: true });
 
 boughtSchema.pre('save', async function (next) {

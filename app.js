@@ -9,8 +9,16 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+//limit ingoing data//
+app.use(express.json({ limit: '20kb' }));
+app.use(express.urlencoded({ extended: true, limit: '20kb' }));
+
 //clean data from mongo expressions lake $gte/$gt etc//
-app.use(mongoSanitize());
+app.use(
+  mongoSanitize({
+    allowDots: true,
+  })
+);
 
 //clean dublicated params//
 app.use(

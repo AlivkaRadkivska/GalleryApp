@@ -12714,23 +12714,22 @@ var buyPicture = /*#__PURE__*/function () {
           return (0, _axios.default)("http://localhost:3000/api/bought/checkout-session/".concat(id));
         case 3:
           session = _context.sent;
-          console.log(session);
-          _context.next = 7;
+          _context.next = 6;
           return stripe.redirectToCheckout({
             sessionId: session.data.session.id
           });
-        case 7:
-          _context.next = 12;
+        case 6:
+          _context.next = 11;
           break;
-        case 9:
-          _context.prev = 9;
+        case 8:
+          _context.prev = 8;
           _context.t0 = _context["catch"](0);
           console.log(_context.t0);
-        case 12:
+        case 11:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 9]]);
+    }, _callee, null, [[0, 8]]);
   }));
   return function buyPicture(_x) {
     return _ref.apply(this, arguments);
@@ -13006,16 +13005,18 @@ if (addPicture) addPicture.addEventListener('submit', function (e) {
 });
 if (updatePicture) updatePicture.addEventListener('submit', function (e) {
   e.preventDefault();
-  var form = new FormData();
+  var tags = [];
   document.querySelectorAll('input[type=checkbox]:checked').forEach(function (e) {
-    form.append('tag_ids', e.value);
+    tags.push(e.value);
   });
-  form.append('name', updatePicture.name.value);
-  form.append('category_id', updatePicture.category_id.value);
-  form.append('format', updatePicture.format.value);
-  form.append('price', updatePicture.price.value);
-  form.append('status', 'checking');
-  (0, _updating4.pictureUpdating)(updatePicture.id.value, form);
+  (0, _updating4.pictureUpdating)(updatePicture.id.value, {
+    name: updatePicture.name.value,
+    tag_ids: tags,
+    category_id: updatePicture.category_id.value,
+    format: updatePicture.format.value,
+    price: updatePicture.price.value,
+    status: 'checking'
+  });
 });
 if (deletePictures) deletePictures.forEach(function (btn) {
   btn.addEventListener('click', function () {
@@ -13071,7 +13072,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50341" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49647" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

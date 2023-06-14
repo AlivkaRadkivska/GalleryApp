@@ -47,3 +47,23 @@ block content
 
     else 
       p.desc.row-center Картин немає
+
+    p.col-left.modal-title.margin-top Список моїх куплених картин:
+    .gallery-grid
+      if bought 
+        each item in bought
+          .statistic-box
+            p.col-center.main-title.txt-purple= item.picture.name
+            .content
+              .col-center
+                .row
+                  p.desc Покупець: 
+                  p #{item.user.name} (#{item.user.email})
+                .row
+                  p.desc Ціна: 
+                  p #{Math.round(item.spent)}$
+                .row
+                  p.desc Дата придбання: 
+                  p= (new Date(item.adding_date).toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}))
+      else 
+        p.desc.row-center Ваших картин ще ніхто не купував

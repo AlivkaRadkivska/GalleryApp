@@ -155,16 +155,18 @@ if (addPicture)
 if (updatePicture)
   updatePicture.addEventListener('submit', (e) => {
     e.preventDefault();
-    const form = new FormData();
+    let tags = [];
     document.querySelectorAll('input[type=checkbox]:checked').forEach((e) => {
-      form.append('tag_ids', e.value);
+      tags.push(e.value);
     });
-    form.append('name', updatePicture.name.value);
-    form.append('category_id', updatePicture.category_id.value);
-    form.append('format', updatePicture.format.value);
-    form.append('price', updatePicture.price.value);
-    form.append('status', 'checking');
-    pictureUpdating(updatePicture.id.value, form);
+    pictureUpdating(updatePicture.id.value, {
+      name: updatePicture.name.value,
+      tag_ids: tags,
+      category_id: updatePicture.category_id.value,
+      format: updatePicture.format.value,
+      price: updatePicture.price.value,
+      status: 'checking',
+    });
   });
 
 if (deletePictures)
